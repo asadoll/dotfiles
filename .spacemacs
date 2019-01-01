@@ -75,7 +75,7 @@ This function should only modify configuration layer settings."
      github
      go
      graphviz
-     (gtags :varibales gtags-enable-by-default)
+     (gtags :varibales gtags-enable-by-default t)
      (haskell :variables
               haskell-completion-backend 'ghci
               haskell-enable-hindent-style "chris-done"
@@ -89,20 +89,22 @@ This function should only modify configuration layer settings."
      ipython-notebook
      ivy
      javascript
-     kotlin
+     ;; kotlin
      latex
      lsp
      lua
      markdown
      multiple-cursors
-     neotree
+     ;; neotree
      nginx
-     nim
+     ;; nim
      org
      pandoc
      (python :variables python-test-runner 'pytest)
-     racket
-     (ranger :varibales ranger-override-dired t)
+     ;; racket
+     (ranger :varibales
+             ranger-override-dired t
+             ranger-show-preview t)
      restclient
      rust
      search-engine
@@ -115,11 +117,10 @@ This function should only modify configuration layer settings."
      spacemacs-layouts
      speed-reading
      (spell-checking :variables spell-checking-enable-by-default nil)
-     spotify
      sql
      (syntax-checking :variables syntax-checking-enable-by-default nil)
      treemacs
-     twitter
+     ;; twitter
      typescript
      typography
      (version-control :variables version-control-diff-tool 'diff-hl)
@@ -135,6 +136,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
+                                      ;; pretty-mode
                                       (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
                                       (modern-cpp-font-lock :location (recipe :fetcher github :repo "ludwigpacifici/modern-cpp-font-lock" :min-version "1"))
                                      )
@@ -279,11 +281,22 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Fira Code"
-                               :size 18
+   dotspacemacs-default-font '(("Fira Code"
+                               :size 20
                                :weight normal
                                :width normal)
-
+                               ("Fira Code Symbol"
+                                :size 20
+                                :weight normal
+                                :width normal))
+   ;; dotspacemacs-default-font (let ((fonts '("Not a font!" "Ubuntu Mono" "Source Code Pro")))
+   ;;                             (mapcar (lambda (font)
+   ;;                                       `(,font
+   ;;                                         :size 12
+   ;;                                         :weight normal
+   ;;                                         :width normal
+   ;;                                         :powerline-scale 1.5))
+   ;;                                     fonts))
    ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
 
@@ -499,7 +512,7 @@ It should only modify the values of Spacemacs settings."
    ;; Run `spacemacs/prettify-org-buffer' when
    ;; visiting README.org files of Spacemacs.
    ;; (default nil)
-   dotspacemacs-pretty-docs nil))
+   dotspacemacs-pretty-docs t))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -515,6 +528,7 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  (setq inhibit-compacting-font-caches t)
   )
 
 (defun dotspacemacs/user-load ()
@@ -530,6 +544,10 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  ;; Preventing ligatures from scrambling
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
 
   ;; ivy will fuzz everywhere!
   (with-eval-after-load 'ivy
@@ -572,6 +590,75 @@ before packages are loaded."
   (setq-default fci-rule-color "#ff0000")
   (setq-default fci-rule-use-dashes t)
   (add-hook 'prog-mode-hook #'fci-mode)
+
+  ;; Enable ligatures
+  ;;; Kawkab Mono
+  ;; This works when using emacs --daemon + emacsclient
+  (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")))
+  ;; This works when using emacs without server/client
+  (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")
+
+  ;;; Fira code
+  (defun fira-code-mode--make-alist (list)
+    "Generate prettify-symbols alist from LIST."
+    (let ((idx -1))
+      (mapcar
+      (lambda (s)
+        (setq idx (1+ idx))
+        (let* ((code (+ #Xe100 idx))
+          (width (string-width s))
+          (prefix ())
+          (suffix '(?\s (Br . Br)))
+          (n 1))
+    (while (< n width)
+      (setq prefix (append prefix '(?\s (Br . Bl))))
+      (setq n (1+ n)))
+    (cons s (append prefix suffix (list (decode-char 'ucs code))))))
+      list)))
+
+  (defconst fira-code-mode--ligatures
+    '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\"
+      "{-" "[]" "::" ":::" ":=" "!!" "!=" "!==" "-}"
+      "--" "---" "-->" "->" "->>" "-<" "-<<" "-~"
+      "#{" "#[" "##" "###" "####" "#(" "#?" "#_" "#_("
+      ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*"
+      "/**" "/=" "/==" "/>" "//" "///" "&&" "||" "||="
+      "|=" "|>" "^=" "$>" "++" "+++" "+>" "=:=" "=="
+      "===" "==>" "=>" "=>>" "<=" "=<<" "=/=" ">-" ">="
+      ">=>" ">>" ">>-" ">>=" ">>>" "<*" "<*>" "<|" "<|>"
+      "<$" "<$>" "<!--" "<-" "<--" "<->" "<+" "<+>" "<="
+      "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<" "<~"
+      "<~~" "</" "</>" "~@" "~-" "~=" "~>" "~~" "~~>" "%%"
+      "x" ":" "+" "+" "*"))
+
+  (defvar fira-code-mode--old-prettify-alist)
+
+  (defun fira-code-mode--enable ()
+    "Enable Fira Code ligatures in current buffer."
+    (setq-local fira-code-mode--old-prettify-alist prettify-symbols-alist)
+    (setq-local prettify-symbols-alist (append (fira-code-mode--make-alist fira-code-mode--ligatures) fira-code-mode--old-prettify-alist))
+    (prettify-symbols-mode t))
+
+  (defun fira-code-mode--disable ()
+    "Disable Fira Code ligatures in current buffer."
+    (setq-local prettify-symbols-alist fira-code-mode--old-prettify-alist)
+    (prettify-symbols-mode -1))
+
+  (define-minor-mode fira-code-mode
+    "Fira Code ligatures minor mode"
+    :lighter " FiraCode"
+    (setq-local prettify-symbols-unprettify-at-point 'right-edge)
+    (if fira-code-mode
+        (fira-code-mode--enable)
+      (fira-code-mode--disable)))
+
+  (defun fira-code-mode--setup ()
+    "Setup Fira Code Symbols"
+    (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
+    (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
+
+  (fira-code-mode--setup)
+  (add-hook 'prog-mode-hook 'fira-code-mode)
 )
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -586,7 +673,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(modern-cpp-font-lock zeal-at-point yasnippet-snippets yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo twittering-mode treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection stickyfunc-enhance srefactor sql-indent spray spotify spaceline-all-the-icons smex smeargle slime-company slim-mode shell-pop scss-mode sass-mode restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racket-mode racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omnisharp ob-restclient ob-ipython ob-http ob-elixir nim-mode nginx-mode nasm-mode nameless mwim multi-term move-text mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls lsp-ui lsp-haskell lsp-go lorem-ipsum livid-mode live-py-mode link-hint kotlin-mode json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-rtags ivy-purpose ivy-hydra insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-make haskell-snippets graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates gitignore-mode github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags fuzzy fsharp-mode font-lock+ flyspell-correct-ivy flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-nim flycheck-mix flycheck-kotlin flycheck-haskell flycheck-credo flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erlang erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker disaster diminish diff-hl deft define-word cython-mode csv-mode cquery counsel-spotify counsel-projectile counsel-gtags counsel-dash counsel-css company-web company-tern company-statistics company-shell company-rtags company-restclient company-lua company-lsp company-go company-ghci company-cabal company-c-headers company-auctex company-anaconda common-lisp-snippets command-log-mode column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk alchemist aggressive-indent ace-link ac-ispell)))
+   '(smeargle orgit magithub ghub+ apiwrap ghub treepy graphql magit-svn magit-gitflow magit-gh-pulls gitignore-templates gitignore-mode github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache evil-magit magit git-commit with-editor diff-hl browse-at-remote zeal-at-point yasnippet-snippets yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection stickyfunc-enhance srefactor sql-indent spray spaceline-all-the-icons smex slime-company slim-mode shell-pop scss-mode sass-mode restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omnisharp ob-restclient ob-ipython ob-http ob-elixir nginx-mode nasm-mode nameless mwim multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc lsp-ui lsp-haskell lsp-go lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-rtags ivy-purpose ivy-hydra insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-make haskell-snippets graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gh-md ggtags fuzzy fsharp-mode font-lock+ flyspell-correct-ivy flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-mix flycheck-haskell flycheck-credo flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erlang erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker disaster diminish deft define-word cython-mode csv-mode cquery counsel-projectile counsel-gtags counsel-dash counsel-css company-web company-tern company-statistics company-shell company-rtags company-restclient company-lua company-lsp company-go company-ghci company-cabal company-c-headers company-auctex company-anaconda common-lisp-snippets command-log-mode column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk alchemist aggressive-indent ace-link ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -113,7 +113,7 @@ module.exports = {
     env: {TERM: 'xterm-256color'},
 
     // set to `false` for no bell
-    bell: 'false',
+    bell: false,
 
     // if `true` (without backticks and without quotes), selected text will automatically be copied to the clipboard
     copyOnSelect: false,
