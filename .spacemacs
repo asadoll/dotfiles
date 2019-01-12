@@ -56,13 +56,14 @@ This function should only modify configuration layer settings."
             c-c++-enable-google-style t)
      (cmake :variables cmake-enable-cmake-ide-support t)
      (colors :variables
-             colors-colorize-identifiers 'variables)
+             colors-colorize-identifiers 'all)
      command-log
      common-lisp
      csharp
      csv
      dash
      deft
+     django
      docker
      elixir
      emacs-lisp
@@ -100,7 +101,9 @@ This function should only modify configuration layer settings."
      ;; nim
      org
      pandoc
-     (python :variables python-test-runner 'pytest)
+     (python :variables
+             python-backend 'lsp
+             python-test-runner 'pytest)
      ;; racket
      (ranger :varibales
              ranger-override-dired t
@@ -119,12 +122,14 @@ This function should only modify configuration layer settings."
      (spell-checking :variables spell-checking-enable-by-default nil)
      sql
      (syntax-checking :variables syntax-checking-enable-by-default nil)
+     theming
      treemacs
      ;; twitter
      typescript
      typography
      (version-control :variables version-control-diff-tool 'diff-hl)
      vinegar
+     windows-scripts
      yaml
     )
 
@@ -262,7 +267,9 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(doom-one
+   dotspacemacs-themes '(solarized-dark
+                         solarized-light
+                         doom-one
                          spacemacs-dark
                          spacemacs-light)
 
@@ -273,7 +280,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 1)
+   dotspacemacs-mode-line-theme '(vim-powerline :separator none :separator-scale 1)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -282,11 +289,11 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '(("Fira Code"
-                               :size 20
+                               :size 18
                                :weight normal
                                :width normal)
                                ("Fira Code Symbol"
-                                :size 20
+                                :size 18
                                 :weight normal
                                 :width normal))
    ;; dotspacemacs-default-font (let ((fonts '("Not a font!" "Ubuntu Mono" "Source Code Pro")))
@@ -545,6 +552,10 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  ;; Starting with a decent wide window
+  (add-to-list 'default-frame-alist '(height . 42))
+  (add-to-list 'default-frame-alist '(width . 110))
+
   ;; Preventing ligatures from scrambling
   (set-language-environment "UTF-8")
   (set-default-coding-systems 'utf-8)
@@ -586,10 +597,13 @@ before packages are loaded."
   ;; Javascript
   (add-hook 'js2-mode-hook #'lsp)
 
+  ;; Python
+  (add-hook 'python-mode-hook #'lsp)
+
   ;; Make fill-column visible
   (setq-default fci-rule-color "#ff0000")
   (setq-default fci-rule-use-dashes t)
-  (add-hook 'prog-mode-hook #'fci-mode)
+  ;; (add-hook 'prog-mode-hook #'fci-mode)
 
   ;; Enable ligatures
   ;;; Kawkab Mono
@@ -673,7 +687,19 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(smeargle orgit magithub ghub+ apiwrap ghub treepy graphql magit-svn magit-gitflow magit-gh-pulls gitignore-templates gitignore-mode github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache evil-magit magit git-commit with-editor diff-hl browse-at-remote zeal-at-point yasnippet-snippets yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection stickyfunc-enhance srefactor sql-indent spray spaceline-all-the-icons smex slime-company slim-mode shell-pop scss-mode sass-mode restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omnisharp ob-restclient ob-ipython ob-http ob-elixir nginx-mode nasm-mode nameless mwim multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc lsp-ui lsp-haskell lsp-go lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-rtags ivy-purpose ivy-hydra insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-make haskell-snippets graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gh-md ggtags fuzzy fsharp-mode font-lock+ flyspell-correct-ivy flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-mix flycheck-haskell flycheck-credo flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erlang erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker disaster diminish deft define-word cython-mode csv-mode cquery counsel-projectile counsel-gtags counsel-dash counsel-css company-web company-tern company-statistics company-shell company-rtags company-restclient company-lua company-lsp company-go company-ghci company-cabal company-c-headers company-auctex company-anaconda common-lisp-snippets command-log-mode column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk alchemist aggressive-indent ace-link ac-ispell)))
+   '(powershell zeal-at-point yasnippet-snippets yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection stickyfunc-enhance srefactor sql-indent spray spaceline-all-the-icons solarized-theme smex smeargle slime-company slim-mode shell-pop scss-mode sass-mode restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js popwin pony-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omnisharp ob-restclient ob-ipython ob-http ob-elixir nginx-mode nasm-mode nameless mwim multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls lsp-ui lsp-haskell lsp-go lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-rtags ivy-purpose ivy-hydra insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-make haskell-snippets graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates gitignore-mode github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags fuzzy fsharp-mode font-lock+ flyspell-correct-ivy flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-mix flycheck-haskell flycheck-credo flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erlang erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker disaster diminish diff-hl deft define-word cython-mode csv-mode cquery counsel-projectile counsel-gtags counsel-dash counsel-css company-web company-tern company-statistics company-shell company-rtags company-restclient company-lua company-lsp company-go company-ghci company-cabal company-c-headers company-auctex company-anaconda common-lisp-snippets command-log-mode column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk alchemist aggressive-indent ace-link ac-ispell))
+ '(safe-local-variable-values
+   '((helm-ctest-dir . "c:/users/aghar/source/repos/Cinder/build/")
+     (helm-make-arguments . "-j7")
+     (helm-make-build-dir . "build")
+     (typescript-backend . tide)
+     (typescript-backend . lsp)
+     (javascript-backend . tern)
+     (javascript-backend . lsp)
+     (go-backend . go-mode)
+     (go-backend . lsp)
+     (elixir-enable-compilation-checking . t)
+     (elixir-enable-compilation-checking))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

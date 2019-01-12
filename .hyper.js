@@ -9,7 +9,7 @@ module.exports = {
     updateChannel: 'stable',
 
     // default font size in pixels for all tabs
-    fontSize: 14,
+    fontSize: 18,
 
     // font family with optional fallbacks
     fontFamily: '"Fira Code", Menlo, "DejaVu Sans Mono", Consolas, "Lucida Console", monospace',
@@ -110,7 +110,7 @@ module.exports = {
     shellArgs: ["/C", "C:\\Users\\aghar\\hyperstart.bat"],
 
     // for environment variables
-    env: {TERM: 'xterm-256color'},
+    env: {TERM: 'cygwin'},
 
     // set to `false` for no bell
     bell: false,
