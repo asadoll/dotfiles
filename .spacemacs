@@ -57,25 +57,25 @@ This function should only modify configuration layer settings."
      (cmake :variables cmake-enable-cmake-ide-support t)
      (colors :variables
              colors-colorize-identifiers 'all)
-     command-log
-     common-lisp
-     csharp
+     ;; command-log
+     ;; common-lisp
+     ;; csharp
      csv
-     dash
+     ;; dash
      deft
      django
      docker
-     elixir
+     ;; elixir
      emacs-lisp
      erc
-     erlang
+     ;; erlang
      ess
      (evil-snipe :variables evil-snipe-enable-alternate-f-and-t-behaviors t)
-     fsharp
+     ;; fsharp
      git
      github
      go
-     graphviz
+     ;; graphviz
      (gtags :varibales gtags-enable-by-default t)
      (haskell :variables
               haskell-completion-backend 'ghci
@@ -84,23 +84,26 @@ This function should only modify configuration layer settings."
               haskell-process-type 'stack-ghci
               haskell-process-args-stack-ghci '("--ghc-options=-ferror-spans") ;; "--with-ghc=intero")
               haskell-stylish-on-save t)
-     ;; helm
+     helm
      html
      imenu-list
      ipython-notebook
-     ivy
+     ;; ivy
      javascript
      ;; kotlin
      latex
      lsp
-     lua
+     ;; lua
      markdown
      multiple-cursors
      ;; neotree
      nginx
      ;; nim
-     org
-     pandoc
+     (org :variables
+          org-enable-github-support t
+          org-enable-bootstrap-support t
+          org-projectile-file "c:/users/aghar/documents/TODOs.org")
+     ;; pandoc
      (python :variables
              python-backend 'lsp
              python-test-runner 'pytest)
@@ -111,7 +114,7 @@ This function should only modify configuration layer settings."
      restclient
      rust
      search-engine
-     semantic
+     ;; semantic
      (shell :variables
             shell-default-shell 'eshell
             shell-default-height 30
@@ -150,7 +153,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(exec-path-from-shell)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -280,7 +283,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(vim-powerline :separator none :separator-scale 1)
+   dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 1)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -576,11 +579,15 @@ before packages are loaded."
   ;; Stop truncating lines by default
   (setq-default truncate-lines t)
 
-  ;; Setup lsp clients
-  ;; (add-hook 'prog-mode-hook #'lsp)
+  ;; Org Mode
+  (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
+  (setq spaceline-org-clock-p t)
+  (with-eval-after-load 'org-agenda
+    (require 'org-projectile)
+    (push (org-projectile:todo-files) org-agenda-files))
 
   ;; C-C++
-  (require 'ccls)
+  ;; (require 'ccls)
   (add-hook 'c-mode-hook #'lsp)
   (add-hook 'c++-mode-hook #'lsp)
   (modern-c++-font-lock-global-mode t)
@@ -606,6 +613,7 @@ before packages are loaded."
   ;; (add-hook 'prog-mode-hook #'fci-mode)
 
   ;; Enable ligatures
+
   ;;; Kawkab Mono
   ;; This works when using emacs --daemon + emacsclient
   (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")))
@@ -687,7 +695,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(org-brain evil-magit doom-modeline cython-mode cquery anaconda-mode ess julia-mode smartparens lsp-mode helm-core magit simple-httpd goto-chg treemacs zeal-at-point yasnippet-snippets yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection stickyfunc-enhance srefactor sql-indent spray spaceline-all-the-icons solarized-theme smex smeargle slime-company slim-mode shrink-path shell-pop scss-mode sass-mode restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js powershell popwin pony-mode pippel pipenv pip-requirements pfuture persp-mode pcre2el password-generator paradox pandoc-mode ox-pandoc overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omnisharp ob-restclient ob-ipython ob-http ob-elixir nginx-mode nasm-mode nameless mwim multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls lsp-ui lsp-haskell lsp-go lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc ivy-yasnippet ivy-xref ivy-rtags ivy-purpose ivy-hydra insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-make haskell-snippets graphviz-dot-mode google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates gitignore-mode github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags fuzzy fsharp-mode font-lock+ flyspell-correct-ivy flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-mix flycheck-haskell flycheck-credo flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erlang erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav eldoc-eval ein editorconfig dumb-jump dotenv-mode doom-themes dockerfile-mode docker disaster diminish diff-hl deft define-word csv-mode counsel-projectile counsel-gtags counsel-dash counsel-css company-web company-tern company-statistics company-shell company-rtags company-restclient company-lua company-lsp company-go company-ghci company-cabal company-c-headers company-auctex company-anaconda common-lisp-snippets command-log-mode column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk alchemist aggressive-indent ace-window ace-link ac-ispell)))
+   '(lsp-ui hlint-refactor lsp-mode avy yasnippet-snippets yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection sql-indent spray spaceline-all-the-icons solarized-theme smeargle slim-mode shell-pop scss-mode sass-mode restclient-helm restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js powershell popwin pony-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox ox-twbs ox-gfm overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file ob-restclient ob-ipython ob-http nginx-mode nasm-mode nameless mwim multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc magithub magit-svn magit-gitflow magit-gh-pulls macrostep lsp-haskell lsp-go lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-hoogle helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags fuzzy font-lock+ flyspell-correct-helm flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-haskell flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker disaster diminish diff-hl deft define-word cython-mode csv-mode cquery counsel-projectile company-web company-tern company-statistics company-shell company-rtags company-restclient company-quickhelp company-lsp company-go company-ghci company-cabal company-c-headers company-auctex company-anaconda column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
