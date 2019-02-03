@@ -147,6 +147,7 @@ This function should only modify configuration layer settings."
                                       ;; pretty-mode
                                       (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
                                       (modern-cpp-font-lock :location (recipe :fetcher github :repo "ludwigpacifici/modern-cpp-font-lock" :min-version "1"))
+                                      solaire-mode
                                      )
 
    ;; A list of packages that cannot be updated.
@@ -292,7 +293,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '(("Fira Code"
-                               :size 18
+                               :size 20
                                :weight normal
                                :width normal)
                                ("Fira Code Symbol"
@@ -556,8 +557,8 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
   ;; Starting with a decent wide window
-  (add-to-list 'default-frame-alist '(height . 42))
-  (add-to-list 'default-frame-alist '(width . 160))
+  (add-to-list 'default-frame-alist '(height . 40))
+  (add-to-list 'default-frame-alist '(width . 140))
 
   ;; Preventing ligatures from scrambling
   (set-language-environment "UTF-8")
@@ -579,6 +580,13 @@ before packages are loaded."
   ;; Stop truncating lines by default
   (setq-default truncate-lines t)
 
+  ;; Make current window shine
+  (use-package solaire-mode
+    :hook ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+    :config
+    (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
+    (solaire-mode-swap-bg))
+
   ;; Org Mode
   (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
   (setq spaceline-org-clock-p t)
@@ -595,7 +603,7 @@ before packages are loaded."
   ;; Haskell
   (require 'lsp-haskell)
   (setq lsp-haskell-process-path-hie "hie-wrapper")
-  (setq lsp-haskell-process-args-hie '("-d" "-l" "C:/Users/aghar/AppData/Local/Temp/hie.log"))
+  (setq lsp-haskell-process-args-hie '("--vomit" "-d" "-l" "C:/Users/aghar/AppData/Local/Temp/hie.log"))
   (add-hook 'haskell-mode-hook #'lsp)
 
   ;; Rust
@@ -695,7 +703,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(zeal-at-point helm-dash yasnippet-snippets yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection sql-indent spray spaceline-all-the-icons solarized-theme smeargle slim-mode shell-pop scss-mode sass-mode restclient-helm restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js powershell popwin pony-mode pippel pipenv pip-requirements persp-mode pcre2el password-generator paradox ox-twbs ox-gfm overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omnisharp ob-restclient ob-ipython ob-http nginx-mode nasm-mode nameless mwim multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc magithub magit-svn magit-gitflow macrostep lsp-ui lsp-haskell lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-hoogle helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags fuzzy forge font-lock+ flyspell-correct-helm flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-haskell flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker disaster diminish diff-hl deft define-word cython-mode csv-mode cquery counsel-projectile company-web company-tern company-statistics company-shell company-rtags company-restclient company-quickhelp company-lsp company-go company-ghci company-cabal company-c-headers company-auctex company-anaconda column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(yasnippet-snippets company-go lsp-mode magit helm treemacs zeal-at-point yapfify yaml-mode xterm-color x86-lookup ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill typo treemacs-projectile treemacs-evil toml-mode toc-org tide tagedit symon string-inflection sql-indent spray spaceline-all-the-icons solarized-theme solaire-mode smeargle slim-mode shell-pop scss-mode sass-mode restclient-helm restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode prettier-js powershell popwin pony-mode pippel pipenv pip-requirements pfuture persp-mode pcre2el password-generator paradox ox-twbs ox-gfm overseer orgit org-ref org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omnisharp ob-restclient ob-ipython ob-http nginx-mode nasm-mode nameless mwim multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc magithub magit-svn magit-gitflow macrostep lsp-ui lsp-haskell lorem-ipsum livid-mode live-py-mode link-hint json-navigator js2-refactor js-doc insert-shebang indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-hoogle helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-dash helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag haskell-snippets google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags fuzzy forge font-lock+ flyspell-correct-helm flycheck-rust flycheck-rtags flycheck-pos-tip flycheck-haskell flycheck-bashate flx-ido fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu ess-R-data-view eshell-z eshell-prompt-extras esh-help erc-yt erc-view-log erc-social-graph erc-image erc-hl-nicks engine-mode emmet-mode elisp-slime-nav ein editorconfig dumb-jump dotenv-mode doom-themes doom-modeline dockerfile-mode docker disaster diminish diff-hl deft define-word cython-mode csv-mode cquery counsel-projectile company-web company-tern company-statistics company-shell company-rtags company-restclient company-quickhelp company-lsp company-ghci company-cabal company-c-headers company-auctex company-anaconda column-enforce-mode color-identifiers-mode cmm-mode cmake-mode cmake-ide clean-aindent-mode clang-format centered-cursor-mode ccls cargo browse-at-remote auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk aggressive-indent ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

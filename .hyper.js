@@ -110,7 +110,8 @@ module.exports = {
     shellArgs: ["/C", "C:\\Users\\aghar\\hyperstart.bat"],
 
     // for environment variables
-    env: {TERM: 'cygwin'},
+    // env: {TERM: 'cygwin'},
+    env: {TERM: 'xterm-256color'},
 
     // set to `false` for no bell
     bell: false,
@@ -130,7 +131,7 @@ module.exports = {
 
     // for advanced config flags please refer to https://hyper.is/#cfg
     materialBox: {
-      scheme: 'one-dark',
+      scheme: 'dracula',
       lightEffect: true,
       selectedTabFlavor: 'underline',
       highlightSelectedTab: true,
