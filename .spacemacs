@@ -22,24 +22,24 @@ This function should only modify configuration layer settings."
    ;; (default 'unused)
    dotspacemacs-enable-lazy-installation 'unused
 
-   ;; If non-nil then Spacemacs will ask for confirmation before installing
+   ;; if non-nil then spacemacs will ask for confirmation before installing
    ;; a layer lazily. (default t)
    dotspacemacs-ask-for-lazy-installation t
 
-   ;; If non-nil layers with lazy install support are lazy installed.
-   ;; List of additional paths where to look for configuration layers.
-   ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
+   ;; if non-nil layers with lazy install support are lazy installed.
+   ;; list of additional paths where to look for configuration layers.
+   ;; paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
 
-   ;; List of configuration layers to load.
+   ;; list of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
      ;; ----------------------------------------------------------------
-     ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
-     ;; `M-m f e R' (Emacs style) to install them.
+     ;; example of useful layers you may want to use right away.
+     ;; uncomment some layer names and press `spc f e r' (vim style) or
+     ;; `m-m f e r' (emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ;; asm
+     asm
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-sort-by-usage t
@@ -48,34 +48,37 @@ This function should only modify configuration layer settings."
                       auto-completion-enable-help-tooltip t
                       :disabled-for org erc)
      ;; better-defaults
-     ;; bibtex
+     bibtex
      (c-c++ :variables
+            c-c++-backend 'lsp-ccls
             c-c++-enable-c++11 t
             c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-google-newline t
             c-c++-enable-google-style t)
      (cmake :variables cmake-enable-cmake-ide-support t)
      (colors :variables
-             colors-colorize-identifiers 'all)
-     ;; command-log
-     ;; common-lisp
+             colors-colorize-identifiers 'variables)
+     command-log
+     common-lisp
      csharp
      csv
+     dap
      dash
+     (debug :variables debug-additional-debuggers '("node-inspect"))
      deft
      django
      docker
-     ;; elixir
+     elixir
      emacs-lisp
-     ;; erc
-     ;; erlang
+     erc
+     erlang
      ess
      (evil-snipe :variables evil-snipe-enable-alternate-f-and-t-behaviors t)
-     ;; fsharp
+     fsharp
      git
      github
-     ;; go
-     ;; graphviz
+     go
+     graphviz
      (gtags :varibales gtags-enable-by-default t)
      (haskell :variables
               haskell-completion-backend 'ghci
@@ -84,37 +87,40 @@ This function should only modify configuration layer settings."
               haskell-process-type 'stack-ghci
               haskell-process-args-stack-ghci '("--ghc-options=-ferror-spans") ;; "--with-ghc=intero")
               haskell-stylish-on-save t)
-     ;; helm
+     helm
      html
      imenu-list
      ipython-notebook
-     ivy
-     javascript
-     ;; kotlin
-     ;; latex
+     ;; ivy
+     (javascript :variables
+                 javascript-backend 'lsp
+                 node-add-modules-path t)
+     kotlin
+     latex
      lsp
-     ;; lua
+     lua
      markdown
      multiple-cursors
      ;; neotree
      nginx
-     ;; nim
+     nim
      (org :variables
           org-enable-github-support t
           org-enable-bootstrap-support t
-          org-projectile-file "c:/users/aghar/documents/TODOs.org")
+          org-projectile-file "c:/users/aghar/documents/todos.org")
      ;; pandoc
      (python :variables
              python-backend 'lsp
              python-test-runner 'pytest)
-     ;; racket
+     racket
      (ranger :varibales
              ranger-override-dired t
              ranger-show-preview t)
      ;; restclient
+     react
      rust
-     ;; search-engine
-     ;; semantic
+     search-engine
+     semantic
      (shell :variables
             shell-default-shell 'eshell
             shell-default-height 30
@@ -125,24 +131,25 @@ This function should only modify configuration layer settings."
      (spell-checking :variables spell-checking-enable-by-default nil)
      sql
      (syntax-checking :variables syntax-checking-enable-by-default nil)
+     tern
      theming
      treemacs
-     ;; twitter
-     typescript
-     ;; typography
+     twitter
+     (typescript :variables typescript-backend 'lsp)
+     typography
      (version-control :variables version-control-diff-tool 'diff-hl)
-     ;; vinegar
+     vinegar
      windows-scripts
      yaml
     )
 
-   ;; List of additional packages that will be installed without being
-   ;; wrapped in a layer. If you need some configuration for these
-   ;; packages, then consider creating a layer. You can also put the
+   ;; list of additional packages that will be installed without being
+   ;; wrapped in a layer. if you need some configuration for these
+   ;; packages, then consider creating a layer. you can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   ;; To use a local version of a package, use the `:location' property:
+   ;; to use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
-   ;; Also include the dependencies as they will not be resolved automatically.
+   ;; also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
                                       ;; pretty-mode
                                       (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
@@ -150,126 +157,126 @@ This function should only modify configuration layer settings."
                                       solaire-mode
                                      )
 
-   ;; A list of packages that cannot be updated.
+   ;; a list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
 
-   ;; A list of packages that will not be installed and loaded.
+   ;; a list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(exec-path-from-shell)
 
-   ;; Defines the behaviour of Spacemacs when installing packages.
-   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; defines the behaviour of spacemacs when installing packages.
+   ;; possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
    ;; packages as well as their unused dependencies. `used-but-keep-unused'
    ;; installs only the used packages but won't delete unused ones. `all'
-   ;; installs *all* packages supported by Spacemacs and never uninstalls them.
+   ;; installs *all* packages supported by spacemacs and never uninstalls them.
    ;; (default is `used-only')
    dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
-  "Initialization:
-This function is called at the very beginning of Spacemacs startup,
+  "initialization:
+this function is called at the very beginning of spacemacs startup,
 before layer configuration.
-It should only modify the values of Spacemacs settings."
-  ;; This setq-default sexp is an exhaustive list of all the supported
+it should only modify the values of spacemacs settings."
+  ;; this setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non-nil then enable support for the portable dumper. You'll need
-   ;; to compile Emacs 27 from source following the instructions in file
-   ;; EXPERIMENTAL.org at to root of the git repository.
+   ;; if non-nil then enable support for the portable dumper. you'll need
+   ;; to compile emacs 27 from source following the instructions in file
+   ;; experimental.org at to root of the git repository.
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
-   ;; File path pointing to emacs 27.1 executable compiled with support
+   ;; file path pointing to emacs 27.1 executable compiled with support
    ;; for the portable dumper (this is currently the branch pdumper).
    ;; (default "emacs-27.0.50")
    dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
 
-   ;; Name of the Spacemacs dump file. This is the file will be created by the
+   ;; name of the spacemacs dump file. this is the file will be created by the
    ;; portable dumper in the cache directory under dumps sub-directory.
-   ;; To load it when starting Emacs add the parameter `--dump-file'
-   ;; when invoking Emacs 27.1 executable on the command line, for instance:
+   ;; to load it when starting emacs add the parameter `--dump-file'
+   ;; when invoking emacs 27.1 executable on the command line, for instance:
    ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
    ;; (default spacemacs.pdmp)
    dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
 
-   ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
-   ;; possible. Set it to nil if you have no way to use HTTPS in your
+   ;; if non-nil elpa repositories are contacted via https whenever it's
+   ;; possible. set it to nil if you have no way to use https in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
-   ;; This variable has no effect if Emacs is launched with the parameter
+   ;; this variable has no effect if emacs is launched with the parameter
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
    dotspacemacs-elpa-https t
 
-   ;; Maximum allowed time in seconds to contact an ELPA repository.
+   ;; maximum allowed time in seconds to contact an elpa repository.
    ;; (default 5)
    dotspacemacs-elpa-timeout 5
 
-   ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
-   ;; This is an advanced option and should not be changed unless you suspect
+   ;; set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
+   ;; this is an advanced option and should not be changed unless you suspect
    ;; performance issues due to garbage collection operations.
    ;; (default '(100000000 0.1))
    dotspacemacs-gc-cons '(500000000 0.1)
 
-   ;; If non-nil then Spacelpa repository is the primary source to install
-   ;; a locked version of packages. If nil then Spacemacs will install the
-   ;; latest version of packages from MELPA. (default nil)
+   ;; if non-nil then spacelpa repository is the primary source to install
+   ;; a locked version of packages. if nil then spacemacs will install the
+   ;; latest version of packages from melpa. (default nil)
    dotspacemacs-use-spacelpa nil
 
-   ;; If non-nil then verify the signature for downloaded Spacelpa archives.
+   ;; if non-nil then verify the signature for downloaded spacelpa archives.
    ;; (default nil)
    dotspacemacs-verify-spacelpa-archives nil
 
-   ;; If non-nil then spacemacs will check for updates at startup
-   ;; when the current branch is not `develop'. Note that checking for
-   ;; new versions works via git commands, thus it calls GitHub services
-   ;; whenever you start Emacs. (default nil)
+   ;; if non-nil then spacemacs will check for updates at startup
+   ;; when the current branch is not `develop'. note that checking for
+   ;; new versions works via git commands, thus it calls github services
+   ;; whenever you start emacs. (default nil)
    dotspacemacs-check-for-update nil
 
-   ;; If non-nil, a form that evaluates to a package directory. For example, to
-   ;; use different package directories for different Emacs versions, set this
+   ;; if non-nil, a form that evaluates to a package directory. for example, to
+   ;; use different package directories for different emacs versions, set this
    ;; to `emacs-version'. (default 'emacs-version)
    dotspacemacs-elpa-subdirectory 'emacs-version
 
-   ;; One of `vim', `emacs' or `hybrid'.
+   ;; one of `vim', `emacs' or `hybrid'.
    ;; `hybrid' is like `vim' except that `insert state' is replaced by the
-   ;; `hybrid state' with `emacs' key bindings. The value can also be a list
-   ;; with `:variables' keyword (similar to layers). Check the editing styles
+   ;; `hybrid state' with `emacs' key bindings. the value can also be a list
+   ;; with `:variables' keyword (similar to layers). check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
    dotspacemacs-editing-style 'vim
 
-   ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
+   ;; if non-nil output loading progress in `*messages*' buffer. (default nil)
    dotspacemacs-verbose-loading nil
 
-   ;; Specify the startup banner. Default value is `official', it displays
-   ;; the official spacemacs logo. An integer value is the index of text
+   ;; specify the startup banner. default value is `official', it displays
+   ;; the official spacemacs logo. an integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
-   ;; directory. A string value must be a path to an image format supported
-   ;; by your Emacs build.
-   ;; If the value is nil then no banner is displayed. (default 'official)
+   ;; directory. a string value must be a path to an image format supported
+   ;; by your emacs build.
+   ;; if the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner nil ;; 'official
 
-   ;; List of items to show in startup buffer or an association list of
-   ;; the form `(list-type . list-size)`. If nil then it is disabled.
-   ;; Possible values for list-type are:
+   ;; list of items to show in startup buffer or an association list of
+   ;; the form `(list-type . list-size)`. if nil then it is disabled.
+   ;; possible values for list-type are:
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
-   ;; List sizes may be nil, in which case
+   ;; list sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
    dotspacemacs-startup-lists '((recents . 5)
                                 (projects . 7))
 
-   ;; True if the home buffer should respond to resize events. (default t)
+   ;; true if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
 
-   ;; Default major mode of the scratch buffer (default `text-mode')
+   ;; default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
 
-   ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
+   ;; initial message in the scratch buffer, such as "welcome to spacemacs!"
    ;; (default nil)
    dotspacemacs-initial-scratch-message nil
 
-   ;; List of themes, the first of the list is loaded when spacemacs starts.
-   ;; Press `SPC T n' to cycle to the next theme in the list (works great
+   ;; list of themes, the first of the list is loaded when spacemacs starts.
+   ;; press `spc t n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(doom-dracula
                          ;; doom-one
@@ -279,18 +286,19 @@ It should only modify the values of Spacemacs settings."
                          ;; spacemacs-light
                         )
 
-   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
-   ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
+   ;; set the theme for the spaceline. supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. the
    ;; first three are spaceline themes. `doom' is the doom-emacs mode-line.
-   ;; `vanilla' is default Emacs mode-line. `custom' is a user defined themes,
-   ;; refer to the DOCUMENTATION.org for more info on how to create your own
-   ;; spaceline theme. Value can be a symbol or list with additional properties.
+   ;; `vanilla' is default emacs mode-line. `custom' is a user defined themes,
+   ;; refer to the documentation.org for more info on how to create your own
+   ;; spaceline theme. value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 1)
+   dotspacemacs-mode-line-theme '(all-the-icons :separator none :separator-scale 1)
+   ;; dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 1)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
-   dotspacemacs-colorize-cursor-according-to-state t
+   dotspacemacs-colorize-cursor-according-to-state nil
 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
@@ -408,7 +416,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
 
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
@@ -542,11 +550,7 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  (setq inhibit-compacting-font-caches t)
-  (add-to-list 'configuration-layer-elpa-archives '("melpa-stable" . "stable.melpa.org/packages/"))
-  (add-to-list 'package-pinned-packages '(spaceline . "melpa-stable"))
-  (add-to-list 'package-pinned-packages '(spaceline-all-the-icons . "melpa-stable"))
-  (add-to-list 'package-pinned-packages '(all-the-icons . "melpa-stable"))  )
+  (setq inhibit-compacting-font-caches t))
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
@@ -563,9 +567,10 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
   ;; Starting with a decent wide window
-  (add-to-list 'default-frame-alist '(height . 40))
+  (add-to-list 'default-frame-alist '(height . 35))
   (add-to-list 'default-frame-alist '(width . 140))
 
+  (add-to-list 'exec-path "/home/asad/.local/bin")
   ;; Enabling vertical window divider
   (window-divider-mode)
 
@@ -580,14 +585,14 @@ before packages are loaded."
   ;;   (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist))
 
   ;; Configuring hunspell as ispell executable
-  (add-to-list 'exec-path "c:/Users/aghar/scoop/apps/msys2/current/mingw64/bin")
-  (setq ispell-program-name "hunspell")
+  ;; (add-to-list 'exec-path "c:/Users/aghar/scoop/apps/msys2/current/mingw64/bin")
+  ;; (setq ispell-program-name "hunspell")
   (setq ispell-local-dictionary "en_US")
   (setq ispell-local-dictionary-alist
         '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 
   ;; Stop truncating lines by default
-  (setq-default truncate-lines t)
+  ;; (setq-default truncate-lines t)
 
   ;; Org Mode
   (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
@@ -605,7 +610,7 @@ before packages are loaded."
   ;; Haskell
   (require 'lsp-haskell)
   (setq lsp-haskell-process-path-hie "hie-wrapper")
-  (setq lsp-haskell-process-args-hie '("--vomit" "-d" "-l" "C:/Users/aghar/AppData/Local/Temp/hie.log"))
+  (setq lsp-haskell-process-args-hie '("--vomit" "-d" "-l" "/home/asad/.temp/hie.log"))
   (add-hook 'haskell-mode-hook #'lsp)
 
   ;; Rust
@@ -613,6 +618,7 @@ before packages are loaded."
 
   ;; Javascript
   (add-hook 'js2-mode-hook #'lsp)
+  (add-hook 'typescript-mode-hook #'lsp)
 
   ;; Python
   (add-hook 'python-mode-hook #'lsp)
@@ -721,3 +727,16 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  )
 )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(zeal-at-point yapfify yaml-mode xterm-color ws-butler winum which-key wgrep web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package toml-mode toc-org tide typescript-mode tagedit sql-indent spray spaceline powerline solaire-mode smex smeargle slim-mode shell-pop scss-mode sass-mode restart-emacs ranger rainbow-mode rainbow-identifiers rainbow-delimiters racer pyvenv pytest pyenv-mode py-isort pug-mode powershell popwin pony-mode pip-requirements persp-mode pcre2el paradox ox-twbs ox-gfm orgit org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-plus-contrib org-mime org-download org-bullets open-junk-file omnisharp nginx-mode neotree multi-term move-text modern-cpp-font-lock mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lsp-haskell lsp-mode lorem-ipsum livid-mode live-py-mode linum-relative link-hint js2-refactor multiple-cursors js-doc ivy-hydra intero insert-shebang indent-guide imenu-list hydra hy-mode hungry-delete htmlize hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make haskell-snippets haml-mode google-translate golden-ratio gnuplot gitignore-mode github-search github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gist gh marshal logito pcache ht gh-md ggtags fuzzy flyspell-correct-ivy flyspell-correct flycheck-rust flycheck-pos-tip flycheck-haskell flycheck flx-ido flx fish-mode fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit magit transient git-commit with-editor lv evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu ess-smart-equals ess-R-data-view ctable ess julia-mode eshell-z eshell-prompt-extras esh-help emmet-mode elisp-slime-nav ein skewer-mode deferred request websocket js2-mode simple-httpd dumb-jump dockerfile-mode docker json-mode tablist magit-popup docker-tramp json-snatcher json-reformat disaster diminish diff-hl deft define-word cython-mode csv-mode csharp-mode counsel-projectile projectile pkg-info epl counsel-dash helm-dash helm helm-core counsel swiper ivy company-web web-completion-data company-tern dash-functional tern company-statistics company-shell company-quickhelp pos-tip company-ghci company-ghc ghc haskell-mode company-cabal company-c-headers company-anaconda company column-enforce-mode color-identifiers-mode coffee-mode cmm-mode cmake-mode clean-aindent-mode clang-format cargo markdown-mode rust-mode bind-map bind-key auto-yasnippet yasnippet auto-highlight-symbol auto-dictionary auto-compile packed async anaconda-mode pythonic f dash s aggressive-indent adaptive-wrap ace-window ace-link avy ac-ispell auto-complete popup doom-dracula-theme)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
