@@ -148,7 +148,10 @@ This function should only modify configuration layer settings."
      tern
      themes-megapack
      theming
-     treemacs
+     (treemacs :variables
+               ;; treemacs-use-follow-mode 'tag
+               treemacs-use-filewatch-mode t
+               treemacs-use-git-mode 'deferred)
      twitter
      (typescript :variables typescript-backend 'lsp)
      typography
@@ -167,10 +170,10 @@ This function should only modify configuration layer settings."
    ;; also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
                                       ;; pretty-mode
+                                      centaur-tabs
                                       (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
                                       (modern-cpp-font-lock :location (recipe :fetcher github :repo "ludwigpacifici/modern-cpp-font-lock" :min-version "1"))
                                       solaire-mode
-                                      centaur-tabs
                                      )
 
    ;; a list of packages that cannot be updated.
@@ -238,9 +241,9 @@ it should only modify the values of spacemacs settings."
    ;; latest version of packages from melpa. (default nil)
    dotspacemacs-use-spacelpa nil
 
-   ;; if non-nil then verify the signature for downloaded spacelpa archives.
-   ;; (default nil)
-   dotspacemacs-verify-spacelpa-archives nil
+   ;; If non-nil then verify the signature for downloaded Spacelpa archives.
+   ;; (default t)
+   dotspacemacs-verify-spacelpa-archives t
 
    ;; if non-nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. note that checking for
@@ -299,10 +302,9 @@ it should only modify the values of spacemacs settings."
    ;; list of themes, the first of the list is loaded when spacemacs starts.
    ;; press `spc t n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(doom-solarized-dark
-                         doom-dracula
+   dotspacemacs-themes '(
+                         doom-solarized-dark
                          doom-solarized-light
-                         ;; doom-solarized-dark
                          ;; spacemacs-dark
                          ;; spacemacs-light
                         )
@@ -314,17 +316,21 @@ it should only modify the values of spacemacs settings."
    ;; refer to the documentation.org for more info on how to create your own
    ;; spaceline theme. value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   ;; dotspacemacs-mode-line-theme '(all-the-icons :separator none :separator-scale 1)
-   dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 0.5)
+   dotspacemacs-mode-line-theme '(all-the-icons :separator none :separator-scale 1)
+   ;; dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 0.5)
 
    ;; if non-nil the cursor color matches the state color in gui emacs.
    ;; (default t)
-   dotspacemacs-colorize-cursor-according-to-state nil
+   dotspacemacs-colorize-cursor-according-to-state t
 
    ;; default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '(("fira code"
-                               :size 16
+   dotspacemacs-default-font '(("Hurmit Nerd Font Mono"
+                                :size 20
+                                :weight normal
+                                :width normal)
+                               ("fira code"
+                               :size 20
                                :weight normal
                                :width normal)
                                ("kawkab mono"
@@ -434,15 +440,20 @@ it should only modify the values of spacemacs settings."
    ;; use to disable fullscreen animations in osx. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
 
-   ;; if non-nil the frame is maximized when emacs starts up.
-   ;; takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
-   ;; (default nil) (emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup t
+   ;; If non-nil the frame is maximized when Emacs starts up.
+   ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
+   ;; (default nil) (Emacs 24.4+ only)
+   dotspacemacs-maximized-at-startup nil
+
+   ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
+   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
+   ;; borderless fullscreen. (default nil)
+   dotspacemacs-undecorated-at-startup nil
 
    ;; a value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-active-transparency 90
+   dotspacemacs-active-transparency 20
 
    ;; a value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
@@ -465,11 +476,15 @@ it should only modify the values of spacemacs settings."
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
 
-   ;; control line numbers activation.
-   ;; if set to `t' or `relative' line numbers are turned on in all `prog-mode' and
-   ;; `text-mode' derivatives. if set to `relative', line numbers are relative.
-   ;; this variable can also be set to a property list for finer control:
+   ;; Control line numbers activation.
+   ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
+   ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
+   ;; numbers are relative. If set to `visual', line numbers are also relative,
+   ;; but lines are only visual lines are counted. For example, folded lines
+   ;; will not be counted and wrapped lines are counted as multiple lines.
+   ;; This variable can also be set to a property list for finer control:
    ;; '(:relative nil
+   ;;   :visual nil
    ;;   :disabled-for-modes dired-mode
    ;;                       doc-view-mode
    ;;                       markdown-mode
@@ -477,6 +492,7 @@ it should only modify the values of spacemacs settings."
    ;;                       pdf-view-mode
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
+   ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
    dotspacemacs-line-numbers t ;; nil
 
@@ -521,20 +537,20 @@ it should only modify the values of spacemacs settings."
    ;; format specification for setting the frame title.
    ;; %a - the `abbreviated-file-name', or `buffer-name'
    ;; %t - `projectile-project-name'
-   ;; %i - `invocation-name'
-   ;; %s - `system-name'
-   ;; %u - contents of $user
+   ;; %I - `invocation-name'
+   ;; %S - `system-name'
+   ;; %U - contents of $USER
    ;; %b - buffer name
    ;; %f - visited file name
-   ;; %f - frame name
+   ;; %F - frame name
    ;; %s - process status
-   ;; %p - percent of buffer above top of window, or top, bot or all
-   ;; %p - percent of buffer above bottom of window, perhaps plus top, or bot or all
+   ;; %p - percent of buffer above top of window, or Top, Bot or All
+   ;; %P - percent of buffer above bottom of window, perhaps plus Top, or Bot or All
    ;; %m - mode name
-   ;; %n - narrow if appropriate
+   ;; %n - Narrow if appropriate
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
-   ;; %z - like %z, but including the end-of-line format
-   ;; (default "%i@%s")
+   ;; %Z - like %z, but including the end-of-line format
+   ;; (default "%I@%S")
    dotspacemacs-frame-title-format "%I@%S"
    ;; dotspacemacs-frame-title-format "Emacs: %a"
 
@@ -572,7 +588,7 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  (require 'rtags)
+  ;; (require 'rtags)
   (setq inhibit-compacting-font-caches t))
 
 (defun dotspacemacs/user-load ()
@@ -597,18 +613,35 @@ before packages are loaded."
     (solaire-global-mode)
     (solaire-mode-swap-bg))
 
+  ;; (use-package centaur-tabs
+  ;;   :demand
+  ;;   :config
+  ;;   (setq centaur-tabs-style "bar")
+  ;;   (setq centaur-tabs-height 32)
+  ;;   (setq centaur-tabs-set-icons t)
+  ;;   (setq centaur-tabs-set-bar 'over)
+  ;;   ;; (setq centaur-tabs-set-bar 'left)
+  ;;   ;; (setq centaur-tabs-set-close-button nil)
+  ;;   (setq centaur-tabs-set-modified-marker t)
+  ;;   (setq centaur-tabs-modified-marker "M")
+  ;;   ;; (setq centaur-tabs-cycle-scope 'tabs)
+  ;;   ;; (centaur-tabs-group-by-projectile-project)
+  ;;   (centaur-tabs-mode t)
+  ;;   :bind (("C-<prior>" . centaur-tabs-backward)
+  ;;          ("C-<next>" . centaur-tabs-forward)
+  ;;          ("C-c t" . centaur-tabs-counsel-switch-group)))
   (use-package centaur-tabs
     :demand
-    :init (setq centaur-tabs-set-bar 'over)
+    :init
+    (setq centaur-tabs-set-bar 'over)
     :config
     (setq centaur-tabs-style "bar")
     (setq centaur-tabs-height 32)
     (setq centaur-tabs-set-icons t)
-    (setq centaur-tabs-set-bar 'over)
     (setq centaur-tabs-set-modified-marker t)
     (setq centaur-tabs-cycle-scope 'tabs)
     ;; (setq centaur-tabs--buffer-show-groups t)
-    (centaur-tabs-group-by-projectile-project)
+    ;; (centaur-tabs-group-by-projectile-project)
     (centaur-tabs-headline-match)
     (centaur-tabs-mode t)
     (defun centaur-tabs-buffer-groups ()
@@ -619,36 +652,36 @@ before packages are loaded."
  Other buffer group by `centaur-tabs-get-group-name' with project name."
       (list
        (cond
-	      ((or (string-equal "*" (substring (buffer-name) 0 1))
-	           (memq major-mode '(magit-process-mode
-				                        magit-status-mode
-				                        magit-diff-mode
-				                        magit-log-mode
-				                        magit-file-mode
-				                        magit-blob-mode
-				                        magit-blame-mode
-				                        )))
-	       "Emacs")
-	      ((derived-mode-p 'prog-mode)
-	       "Editing")
-	      ((derived-mode-p 'dired-mode)
-	       "Dired")
-	      ((memq major-mode '(helpful-mode
-			                      help-mode))
-	       "Help")
-	      ((memq major-mode '(org-mode
-			                      org-agenda-clockreport-mode
-			                      org-src-mode
-			                      org-agenda-mode
-			                      org-beamer-mode
-			                      org-indent-mode
-			                      org-bullets-mode
-			                      org-cdlatex-mode
-			                      org-agenda-log-mode
-			                      diary-mode))
-	       "OrgMode")
-	      (t
-	       (centaur-tabs-get-group-name (current-buffer))))))
+        ((or (string-equal "*" (substring (buffer-name) 0 1))
+             (memq major-mode '(magit-process-mode
+  			                        magit-status-mode
+  			                        magit-diff-mode
+  			                        magit-log-mode
+  			                        magit-file-mode
+  			                        magit-blob-mode
+  			                        magit-blame-mode
+  			                        )))
+         "Emacs")
+        ((derived-mode-p 'prog-mode)
+         "Editing")
+        ((derived-mode-p 'dired-mode)
+         "Dired")
+        ((memq major-mode '(helpful-mode
+  		                      help-mode))
+         "Help")
+        ((memq major-mode '(org-mode
+  		                      org-agenda-clockreport-mode
+  		                      org-src-mode
+  		                      org-agenda-mode
+  		                      org-beamer-mode
+  		                      org-indent-mode
+  		                      org-bullets-mode
+  		                      org-cdlatex-mode
+  		                      org-agenda-log-mode
+  		                      diary-mode))
+         "OrgMode")
+        (t
+         (centaur-tabs-get-group-name (current-buffer))))))
     :hook
     (dashboard-mode . centaur-tabs-local-mode)
     (term-mode . centaur-tabs-local-mode)
@@ -660,8 +693,8 @@ before packages are loaded."
     ("C-<tab>" . centaur-tabs-forward)
     ("C-c t" . centaur-tabs-counsel-switch-group)
     (:map evil-normal-state-map
-	        ("g t" . centaur-tabs-forward)
-	        ("g T" . centaur-tabs-backward)))
+          ("g t" . centaur-tabs-forward)
+          ("g T" . centaur-tabs-backward)))
 
   ;; Starting with a decent wide window
   ;; (add-to-list 'default-frame-alist '(height . 35))
@@ -680,7 +713,6 @@ before packages are loaded."
   (doom-themes-treemacs-config)
   (doom-themes-org-config)
   (doom-themes-visual-bell-config)
-
   ;; ivy will fuzz everywhere!
   ;; (with-eval-after-load 'ivy
   ;;   (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
@@ -735,6 +767,9 @@ before packages are loaded."
   ;; Javascript
   (add-hook 'js2-mode-hook #'lsp)
   (add-hook 'typescript-mode-hook #'lsp)
+  (require 'dap-node)
+  (require 'dap-firefox)
+  (require 'dap-chrome)
 
   ;; Python
   (add-hook 'python-mode-hook #'lsp)
@@ -803,7 +838,8 @@ before packages are loaded."
 
   (define-minor-mode fira-code-mode
     "Fira Code ligatures minor mode"
-    :lighter " FiraCode"
+    :lighter " Hurmit Nerd Font Mono"
+    ;; :lighter " FiraCode"
     (setq-local prettify-symbols-unprettify-at-point 'right-edge)
     (if fira-code-mode
         (fira-code-mode--enable)
@@ -811,8 +847,10 @@ before packages are loaded."
 
   (defun fira-code-mode--setup ()
     "Setup Fira Code Symbols"
-    (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
-    (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
+    (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Hurmit Nerd Font Mono")))
+    (set-fontset-font t '(#Xe100 . #Xe16f) "Hurmit Nerd Font Mono"))
+    ;; (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
+    ;; (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
 
   (fira-code-mode--setup)
   (add-hook 'prog-mode-hook 'fira-code-mode)
@@ -824,11 +862,17 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol nil)
+ '(package-selected-packages '(ansi package-build shut-up epl git commander f dash s)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(treemacs-root-face ((t (:inherit (variable-pitch font-lock-string-face) :weight normal :height 1.1)))))
 )
