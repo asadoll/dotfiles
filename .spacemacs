@@ -29,7 +29,7 @@ This function should only modify configuration layer settings."
    ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '()
+   dotspacemacs-configuration-layer-path '("~/.emacs.d/private/")
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
@@ -83,6 +83,7 @@ This function should only modify configuration layer settings."
      erlang
      ess
      (evil-snipe :variables evil-snipe-enable-alternate-f-and-t-behaviors t)
+     fira-code-ligatures
      fsharp
      git
      github
@@ -303,8 +304,8 @@ it should only modify the values of spacemacs settings."
    ;; press `spc t n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         doom-solarized-dark
-                         doom-solarized-light
+                         doom-one
+                         doom-one-light
                          ;; spacemacs-dark
                          ;; spacemacs-light
                         )
@@ -325,10 +326,11 @@ it should only modify the values of spacemacs settings."
 
    ;; default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '(("Hurmit Nerd Font Mono"
-                                :size 20
-                                :weight normal
-                                :width normal)
+   dotspacemacs-default-font '(
+                               ;; ("Hurmit Nerd Font Mono"
+                               ;;  :size 20
+                               ;;  :weight normal
+                               ;;  :width normal)
                                ("fira code"
                                :size 20
                                :weight normal
@@ -709,7 +711,7 @@ before packages are loaded."
   (set-default-coding-systems 'utf-8)
 
   (display-time-mode t)
-  (display-battery-mode t)
+  ;; (display-battery-mode t)
   (doom-themes-treemacs-config)
   (doom-themes-org-config)
   (doom-themes-visual-bell-config)
@@ -727,7 +729,7 @@ before packages are loaded."
         '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 
   ;; Stop truncating lines by default
-  ;; (setq-default truncate-lines t)
+  (setq-default truncate-lines t)
 
   ;; Org Mode
   (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
@@ -790,69 +792,6 @@ before packages are loaded."
   ;; This works when using emacs without server/client
   (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")
 
-  ;;; Fira code
-  (defun fira-code-mode--make-alist (list)
-    "Generate prettify-symbols alist from LIST."
-    (let ((idx -1))
-      (mapcar
-      (lambda (s)
-        (setq idx (1+ idx))
-        (let* ((code (+ #Xe100 idx))
-          (width (string-width s))
-          (prefix ())
-          (suffix '(?\s (Br . Br)))
-          (n 1))
-    (while (< n width)
-      (setq prefix (append prefix '(?\s (Br . Bl))))
-      (setq n (1+ n)))
-    (cons s (append prefix suffix (list (decode-char 'ucs code))))))
-      list)))
-
-  (defconst fira-code-mode--ligatures
-    '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\"
-      "{-" "[]" "::" ":::" ":=" "!!" "!=" "!==" "-}"
-      "--" "---" "-->" "->" "->>" "-<" "-<<" "-~"
-      "#{" "#[" "##" "###" "####" "#(" "#?" "#_" "#_("
-      ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*"
-      "/**" "/=" "/==" "/>" "//" "///" "&&" "||" "||="
-      "|=" "|>" "^=" "$>" "++" "+++" "+>" "=:=" "=="
-      "===" "==>" "=>" "=>>" "<=" "=<<" "=/=" ">-" ">="
-      ">=>" ">>" ">>-" ">>=" ">>>" "<*" "<*>" "<|" "<|>"
-      "<$" "<$>" "<!--" "<-" "<--" "<->" "<+" "<+>" "<="
-      "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<" "<~"
-      "<~~" "</" "</>" "~@" "~-" "~=" "~>" "~~" "~~>" "%%"
-      "x" ":" "+" "+" "*"))
-
-  (defvar fira-code-mode--old-prettify-alist)
-
-  (defun fira-code-mode--enable ()
-    "Enable Fira Code ligatures in current buffer."
-    (setq-local fira-code-mode--old-prettify-alist prettify-symbols-alist)
-    (setq-local prettify-symbols-alist (append (fira-code-mode--make-alist fira-code-mode--ligatures) fira-code-mode--old-prettify-alist))
-    (prettify-symbols-mode t))
-
-  (defun fira-code-mode--disable ()
-    "Disable Fira Code ligatures in current buffer."
-    (setq-local prettify-symbols-alist fira-code-mode--old-prettify-alist)
-    (prettify-symbols-mode -1))
-
-  (define-minor-mode fira-code-mode
-    "Fira Code ligatures minor mode"
-    :lighter " Hurmit Nerd Font Mono"
-    ;; :lighter " FiraCode"
-    (setq-local prettify-symbols-unprettify-at-point 'right-edge)
-    (if fira-code-mode
-        (fira-code-mode--enable)
-      (fira-code-mode--disable)))
-
-  (defun fira-code-mode--setup ()
-    "Setup Fira Code Symbols"
-    (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Hurmit Nerd Font Mono")))
-    (set-fontset-font t '(#Xe100 . #Xe16f) "Hurmit Nerd Font Mono"))
-    ;; (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol")))
-    ;; (set-fontset-font t '(#Xe100 . #Xe16f) "Fira Code Symbol"))
-
-  (fira-code-mode--setup)
   (add-hook 'prog-mode-hook 'fira-code-mode)
 )
 ;; Do not write anything past this comment. This is where Emacs will
