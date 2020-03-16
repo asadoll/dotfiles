@@ -62,6 +62,7 @@ This function should only modify configuration layer settings."
             c-c++-lsp-extra-init-params '(:completion (:detailedLabel t) :index (:comments 2))
             c-c++-lsp-sem-highlight-method 'font-lock
             c-c++-lsp-sem-highlight-rainbow nil)
+     ;; cascadia-code-ligatures
      (cmake :variables cmake-enable-cmake-ide-support t)
      (colors :variables
              colors-colorize-identifiers 'variables)
@@ -83,7 +84,7 @@ This function should only modify configuration layer settings."
      erlang
      ess
      (evil-snipe :variables evil-snipe-enable-alternate-f-and-t-behaviors t)
-     fira-code-ligatures
+     ;; fira-code-ligatures
      fsharp
      git
      github
@@ -92,18 +93,17 @@ This function should only modify configuration layer settings."
      graphviz
      ;; (gtags :varibales gtags-enable-by-default t)
      (haskell :variables
-              haskell-completion-backend 'lsp ;;'ghci
+              haskell-completion-backend 'lsp
               haskell-enable-hindent t
-              haskell-enable-hindent-style "chris-done"
+              haskell-enable-hindent-style "johan-tibell"
               haskell-enable-ghc-mod-support nil
-              haskell-process-type 'stack-ghci
-              haskell-process-args-stack-ghci '("--ghc-options=-ferror-spans") ;; "--with-ghc=intero")
+              haskell-process-type 'cabal-new-repl
               haskell-stylish-on-save t)
-     ;; helm
+     helm
      html
      imenu-list
      ipython-notebook
-     ivy
+     ;; ivy
      (javascript :variables
                  javascript-backend 'lsp
                  node-add-modules-path t)
@@ -120,8 +120,8 @@ This function should only modify configuration layer settings."
      nim
      (org :variables
           org-enable-github-support t
-          org-enable-bootstrap-support t
-          org-projectile-file "~/Documents/todos.org")
+          org-enable-bootstrap-support t)
+          ;; org-projectile-file "/home/asad/Documents/agenda.org")
      pandoc
      pdf
      (python :variables
@@ -171,8 +171,9 @@ This function should only modify configuration layer settings."
    ;; also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
                                       ;; pretty-mode
+                                      exec-path-from-shell
                                       centaur-tabs
-                                      (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
+                                      ;; (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
                                       (modern-cpp-font-lock :location (recipe :fetcher github :repo "ludwigpacifici/modern-cpp-font-lock" :min-version "1"))
                                       solaire-mode
                                      )
@@ -181,7 +182,9 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; a list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(exec-path-from-shell)
+   dotspacemacs-excluded-packages '(
+                                    ;; exec-path-from-shell
+                                    window-purpose)
 
    ;; defines the behaviour of spacemacs when installing packages.
    ;; possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -282,8 +285,9 @@ it should only modify the values of spacemacs settings."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; list sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 15)
-                                (projects . 7))
+   dotspacemacs-startup-lists '((projects . 7)
+                                (recents . 15)
+                                (todos . 5))
 
    ;; true if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -317,8 +321,8 @@ it should only modify the values of spacemacs settings."
    ;; refer to the documentation.org for more info on how to create your own
    ;; spaceline theme. value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(all-the-icons :separator none :separator-scale 1)
-   ;; dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 0.5)
+   ;; dotspacemacs-mode-line-theme '(all-the-icons :separator none :separator-scale 1)
+   dotspacemacs-mode-line-theme '(doom :separator none :separator-scale 0.5)
 
    ;; if non-nil the cursor color matches the state color in gui emacs.
    ;; (default t)
@@ -331,23 +335,21 @@ it should only modify the values of spacemacs settings."
                                ;;  :size 20
                                ;;  :weight normal
                                ;;  :width normal)
-                               ("fira code"
-                               :size 20
-                               :weight normal
-                               :width normal)
-                               ("kawkab mono"
-                               :size 14
-                               :weight normal
-                               :width normal)
+
+                               ("Cascadia Code PL"
+                                :size 20
+                                :weight normal)
+
+                               ("all-the-icons"
+                                :size 20
+                                :weight normal
+                                :width normal)
+
+                               ;; ("kawkab mono"
+                               ;; :size 14
+                               ;; :weight normal
+                               ;; :width normal)
                               )
-   ;; dotspacemacs-default-font (let ((fonts '("not a font!" "ubuntu mono" "source code pro")))
-   ;;                             (mapcar (lambda (font)
-   ;;                                       `(,font
-   ;;                                         :size 12
-   ;;                                         :weight normal
-   ;;                                         :width normal
-   ;;                                         :powerline-scale 1.5))
-   ;;                                     fonts))
    ;; the leader key (default "spc")
    dotspacemacs-leader-key "SPC"
 
@@ -607,6 +609,7 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  (setq read-process-output-max (* 1024 1024))
   ;; Make current window shine
   (use-package solaire-mode
     :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
@@ -615,29 +618,13 @@ before packages are loaded."
     (solaire-global-mode)
     (solaire-mode-swap-bg))
 
-  ;; (use-package centaur-tabs
-  ;;   :demand
-  ;;   :config
-  ;;   (setq centaur-tabs-style "bar")
-  ;;   (setq centaur-tabs-height 32)
-  ;;   (setq centaur-tabs-set-icons t)
-  ;;   (setq centaur-tabs-set-bar 'over)
-  ;;   ;; (setq centaur-tabs-set-bar 'left)
-  ;;   ;; (setq centaur-tabs-set-close-button nil)
-  ;;   (setq centaur-tabs-set-modified-marker t)
-  ;;   (setq centaur-tabs-modified-marker "M")
-  ;;   ;; (setq centaur-tabs-cycle-scope 'tabs)
-  ;;   ;; (centaur-tabs-group-by-projectile-project)
-  ;;   (centaur-tabs-mode t)
-  ;;   :bind (("C-<prior>" . centaur-tabs-backward)
-  ;;          ("C-<next>" . centaur-tabs-forward)
-  ;;          ("C-c t" . centaur-tabs-counsel-switch-group)))
   (use-package centaur-tabs
     :demand
     :init
-    (setq centaur-tabs-set-bar 'over)
+    (setq centaur-tabs-set-bar 'under)
     :config
     (setq centaur-tabs-style "bar")
+    (setq centaur-tabs-close-button "🅇")
     (setq centaur-tabs-height 32)
     (setq centaur-tabs-set-icons t)
     (setq centaur-tabs-set-modified-marker t)
@@ -691,7 +678,8 @@ before packages are loaded."
     (org-agenda-mode . centaur-tabs-local-mode)
     (helpful-mode . centaur-tabs-local-mode)
     :bind
-    ("C-S-<tab>" . centaur-tabs-backward)
+    ;; ("C-S-<tab>" . centaur-tabs-backward)
+    ("C-<iso-lefttab>" . centaur-tabs-backward)
     ("C-<tab>" . centaur-tabs-forward)
     ("C-c t" . centaur-tabs-counsel-switch-group)
     (:map evil-normal-state-map
@@ -702,7 +690,10 @@ before packages are loaded."
   ;; (add-to-list 'default-frame-alist '(height . 35))
   ;; (add-to-list 'default-frame-alist '(width . 140))
 
-  (add-to-list 'exec-path "/home/asad/.local/bin")
+  (setq exec-path-from-shell-check-startup-files nil)
+  (exec-path-from-shell-initialize)
+  ;; (add-to-list 'exec-path "/home/asad/.local/bin")
+
   ;; Enabling vertical window divider
   (window-divider-mode)
 
@@ -713,7 +704,6 @@ before packages are loaded."
   (display-time-mode t)
   ;; (display-battery-mode t)
   (doom-themes-treemacs-config)
-  (doom-themes-org-config)
   (doom-themes-visual-bell-config)
   ;; ivy will fuzz everywhere!
   ;; (with-eval-after-load 'ivy
@@ -732,18 +722,33 @@ before packages are loaded."
   (setq-default truncate-lines t)
 
   ;; Org Mode
-  (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
-  (setq spaceline-org-clock-p t)
+  (with-eval-after-load 'org
+    (setq org-projectile-file "/home/asad/Documents/agenda.org")
+    (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "▶" "◇" "■" "◆"))
+    (setq org-todo-keywords '((sequence " TODO(t)" "|" " DONE(d)")
+                              (sequence " WAITING(w)" "|")
+                              (sequence "|" " CANCELED(c)")))
+    (setq spaceline-org-clock-p t)
+    (doom-themes-org-config)
+    )
+
   (with-eval-after-load 'org-agenda
     (require 'org-projectile)
-    (push (org-projectile:todo-files) org-agenda-files))
+    (push org-projectile-file org-agenda-files))
 
   ;; All languages
   ;; (add-hook 'prog-mode-hook #'lsp)
 
+  (setq company-minimum-prefix-length 1
+        company-idle-delay 0.0)
+  (setq lsp-prefer-capf t)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-enable-indentation nil)
   (setq lsp-imenu-show-container-name t)
+  (setq lsp-ui-doc-position 'top)
+  (setq lsp-ui-doc-max-width 80
+        lsp-ui-doc-max-height 23)
+  ;; (setq lsp-document-sync-method 'full)
 
   ;; C-C++
   (setq projectile-require-project-root t)
@@ -751,33 +756,36 @@ before packages are loaded."
   (setq cmake-ide-header-search-other-file nil)
   (setq cmake-ide-header-search-first-including nil)
   (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
-  (add-hook 'c-mode-hook #'lsp)
-  (add-hook 'c++-mode-hook #'lsp)
+  (add-hook 'c-mode-hook 'lsp)
+  (add-hook 'c++-mode-hook 'lsp)
   (modern-c++-font-lock-global-mode t)
   (setq gdb-many-windows t
         gdb-show-main t)
 
   ;; Haskell
-  (require 'lsp-haskell)
+  ;; (require 'lsp-haskell)
   (setq lsp-haskell-process-path-hie "hie-wrapper")
-  (setq lsp-haskell-process-args-hie '("--vomit" "-d" "-l" "/home/asad/.temp/hie.log"))
-  (add-hook 'haskell-mode-hook #'lsp)
+  (setq lsp-haskell-process-args-hie '("-d" "-l" "/home/asad/.temp/hie.log"))
+  ;; (setq lsp-haskell-process-path-hie "cabal")
+  ;; (setq lsp-haskell-process-args-hie '("new-exec" "ghcide" "--" "--lsp"))
+  ;; (setq lsp-haskell-process-wrapper-function (lambda (argv) (cons (car argv) (cddr argv))))
+  (add-hook 'haskell-mode-hook 'lsp)
 
   ;; Rust
-  (add-hook 'rust-mode-hook #'lsp)
+  (add-hook 'rust-mode-hook 'lsp)
 
   ;; Javascript
-  (add-hook 'js2-mode-hook #'lsp)
-  (add-hook 'typescript-mode-hook #'lsp)
+  (add-hook 'js2-mode-hook 'lsp)
+  (add-hook 'typescript-mode-hook 'lsp)
   (require 'dap-node)
   (require 'dap-firefox)
   (require 'dap-chrome)
 
   ;; Python
-  (add-hook 'python-mode-hook #'lsp)
+  (add-hook 'python-mode-hook 'lsp)
 
   ;; Dart
-  (add-hook 'dart-mode-hook #'lsp)
+  (add-hook 'dart-mode-hook 'lsp)
 
   ;; Make fill-column visible
   ;; (setq-default fci-rule-color "#ff0000")
@@ -788,11 +796,59 @@ before packages are loaded."
 
   ;;; Kawkab Mono
   ;; This works when using emacs --daemon + emacsclient
-  (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")))
+  ;; (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")))
+  (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Vazir")))
   ;; This works when using emacs without server/client
-  (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")
+  ;; (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")
+  (set-fontset-font t '(#X600 . #X6ff) "Vazir")
 
-  (add-hook 'prog-mode-hook 'fira-code-mode)
+  ;; (add-hook 'prog-mode-hook 'fira-code-mode)
+  (use-package composite
+    :defer t
+    :init
+    (defvar composition-ligature-table (make-char-table nil))
+    :hook
+    (((prog-mode conf-mode nxml-mode markdown-mode help-mode lsp-ui-doc-frame-mode org-mode)
+      . (lambda () (setq-local composition-function-table composition-ligature-table))))
+    :config
+    ;; support ligatures, some toned down to prevent hang
+    (when (version<= "27.0" emacs-version)
+      (let ((alist
+             '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
+               (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
+               (36 . ".\\(?:\\(>\\)>?\\)")
+               (37 . ".\\(?:\\(%\\)%?\\)")
+               (38 . ".\\(?:\\(&\\)&?\\)")
+               (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
+               ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
+               (43 . ".\\(?:\\([>]\\)>?\\)")
+               ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
+               (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
+               ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
+               (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
+               (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
+               ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
+               (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
+               (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
+               (59 . ".\\(?:\\(;\\);?\\)")
+               (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
+               (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
+               (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
+               (63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
+               (91 . ".\\(?:\\(|\\)[]|]?\\)")
+               ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
+               (94 . ".\\(?:\\(=\\)=?\\)")
+               (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
+               (119 . ".\\(?:\\(ww\\)w?\\)")
+               (123 . ".\\(?:\\(|\\)[|}]?\\)")
+               (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
+               (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
+        (dolist (char-regexp alist)
+          (set-char-table-range composition-ligature-table (car char-regexp)
+                                `([,(cdr char-regexp) 0 font-shape-gstring]))))
+      (set-char-table-parent composition-ligature-table composition-function-table))
+    )
+  (require 'window-purpose)
 )
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -807,7 +863,24 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(evil-want-Y-yank-to-eol nil)
- '(package-selected-packages '(ansi package-build shut-up epl git commander f dash s)))
+ '(hl-todo-keyword-faces
+   '(("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7")
+     ("OKAY" . "#4f97d7")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#86dc2f")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX+" . "#dc752f")
+     ("\\?\\?\\?+" . "#dc752f")))
+ '(package-selected-packages '(ansi package-build shut-up epl git commander f dash s))
+ '(paradox-github-token t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
