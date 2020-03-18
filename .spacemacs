@@ -44,9 +44,10 @@ This function should only modify configuration layer settings."
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
                       auto-completion-enable-sort-by-usage t
-                      auto-completion-return-key-behavior 'complete
-                      auto-completion-tab-key-behavior 'cycle
+                      auto-completion-tab-key-behavior 'complete
+                      auto-completion-return-key-behavior nil
                       auto-completion-enable-help-tooltip t
+                      auto-completion-use-company-box t
                       :disabled-for org erc)
      ;; better-defaults
      bibtex
@@ -111,6 +112,7 @@ This function should only modify configuration layer settings."
      kotlin
      latex
      (lsp :variables
+          lsp-prefer-capf nil
           lsp-ui-doc-enable t
           lsp-ui-sideline-enable nil)
      lua
@@ -336,14 +338,14 @@ it should only modify the values of spacemacs settings."
                                ;;  :weight normal
                                ;;  :width normal)
 
-                               ("Cascadia Code PL"
+                               ("Cascadia Code"
                                 :size 20
                                 :weight normal)
 
-                               ("all-the-icons"
-                                :size 20
-                                :weight normal
-                                :width normal)
+                               ;; ("icons-in-terminal"
+                               ;;  :size 20
+                               ;;  :weight normal
+                               ;;  :width normal)
 
                                ;; ("kawkab mono"
                                ;; :size 14
@@ -608,8 +610,48 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-
   (setq read-process-output-max (* 1024 1024))
+
+  (add-to-list 'load-path "~/.local/share/icons-in-terminal/")
+  (require 'icons-in-terminal)
+
+  (setq completion-styles `(basic partial-completion emacs22 initials
+                                  ,(if (version<= emacs-version "27.0") 'helm-flex 'flex)))
+  (setq company-box-icons-unknown 'fa_question_circle)
+  (setq company-box-icons-elisp
+    '((fa_tag :face font-lock-function-name-face) ;; Function
+      (fa_cog :face font-lock-variable-name-face) ;; Variable
+      (fa_cube :face font-lock-constant-face) ;; Feature
+      (md_color_lens :face font-lock-doc-face))) ;; Face
+  (setq company-box-icons-yasnippet 'fa_bookmark)
+  (setq company-box-icons-lsp
+    '((1 . fa_text_height) ;; Text
+      (2 . (fa_tags :face font-lock-function-name-face)) ;; Method
+      (3 . (fa_tag :face font-lock-function-name-face)) ;; Function
+      (4 . (fa_tag :face font-lock-function-name-face)) ;; Constructor
+      (5 . (fa_cog :foreground "#FF9800")) ;; Field
+      (6 . (fa_cog :foreground "#FF9800")) ;; Variable
+      (7 . (fa_cube :foreground "#7C4DFF")) ;; Class
+      (8 . (fa_cube :foreground "#7C4DFF")) ;; Interface
+      (9 . (fa_cube :foreground "#7C4DFF")) ;; Module
+      (10 . (fa_cog :foreground "#FF9800")) ;; Property
+      (11 . md_settings_system_daydream) ;; Unit
+      (12 . (fa_cog :foreground "#FF9800")) ;; Value
+      (13 . (md_storage :face font-lock-type-face)) ;; Enum
+      (14 . (md_closed_caption :foreground "#009688")) ;; Keyword
+      (15 . md_closed_caption) ;; Snippet
+      (16 . (md_color_lens :face font-lock-doc-face)) ;; Color
+      (17 . fa_file_text_o) ;; File
+      (18 . md_refresh) ;; Reference
+      (19 . fa_folder_open) ;; Folder
+      (20 . (md_closed_caption :foreground "#009688")) ;; EnumMember
+      (21 . (fa_square :face font-lock-constant-face)) ;; Constant
+      (22 . (fa_cube :face font-lock-type-face)) ;; Struct
+      (23 . fa_calendar) ;; Event
+      (24 . fa_square_o) ;; Operator
+      (25 . fa_arrows)) ;; TypeParameter
+    )
+
   ;; Make current window shine
   (use-package solaire-mode
     :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
@@ -618,13 +660,14 @@ before packages are loaded."
     (solaire-global-mode)
     (solaire-mode-swap-bg))
 
+  ;; Setup tabs
   (use-package centaur-tabs
     :demand
     :init
     (setq centaur-tabs-set-bar 'under)
     :config
     (setq centaur-tabs-style "bar")
-    (setq centaur-tabs-close-button "🅇")
+    (setq centaur-tabs-close-button "") ;; 🅇
     (setq centaur-tabs-height 32)
     (setq centaur-tabs-set-icons t)
     (setq centaur-tabs-set-modified-marker t)
@@ -725,9 +768,9 @@ before packages are loaded."
   (with-eval-after-load 'org
     (setq org-projectile-file "/home/asad/Documents/agenda.org")
     (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "▶" "◇" "■" "◆"))
-    (setq org-todo-keywords '((sequence " TODO(t)" "|" " DONE(d)")
-                              (sequence " WAITING(w)" "|")
-                              (sequence "|" " CANCELED(c)")))
+    (setq org-todo-keywords '((sequence " TODO(t)" "|" " DONE(d)")
+                              (sequence " WAITING(w)" "|")
+                              (sequence "|" " CANCELED(c)")))
     (setq spaceline-org-clock-p t)
     (doom-themes-org-config)
     )
@@ -741,7 +784,7 @@ before packages are loaded."
 
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.0)
-  (setq lsp-prefer-capf t)
+  ;; (setq lsp-prefer-capf t)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-enable-indentation nil)
   (setq lsp-imenu-show-container-name t)
@@ -787,13 +830,6 @@ before packages are loaded."
   ;; Dart
   (add-hook 'dart-mode-hook 'lsp)
 
-  ;; Make fill-column visible
-  ;; (setq-default fci-rule-color "#ff0000")
-  ;; (setq-default fci-rule-use-dashes t)
-  ;; (add-hook 'prog-mode-hook #'fci-mode)
-
-  ;; Enable ligatures
-
   ;;; Kawkab Mono
   ;; This works when using emacs --daemon + emacsclient
   ;; (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")))
@@ -803,12 +839,13 @@ before packages are loaded."
   (set-fontset-font t '(#X600 . #X6ff) "Vazir")
 
   ;; (add-hook 'prog-mode-hook 'fira-code-mode)
+  ;; Enable ligatures
   (use-package composite
     :defer t
     :init
     (defvar composition-ligature-table (make-char-table nil))
     :hook
-    (((prog-mode conf-mode nxml-mode markdown-mode help-mode lsp-ui-doc-frame-mode org-mode)
+    (((prog-mode conf-mode nxml-mode markdown-mode help-mode lsp-ui-doc-frame-mode org-mode company-mode company-box-mode text-mode)
       . (lambda () (setq-local composition-function-table composition-ligature-table))))
     :config
     ;; support ligatures, some toned down to prevent hang
