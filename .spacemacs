@@ -100,11 +100,11 @@ This function should only modify configuration layer settings."
               haskell-enable-ghc-mod-support nil
               haskell-process-type 'cabal-new-repl
               haskell-stylish-on-save t)
-     helm
+     ;; helm
      html
      imenu-list
      ipython-notebook
-     ;; ivy
+     ivy
      (javascript :variables
                  javascript-backend 'lsp
                  node-add-modules-path t)
@@ -173,6 +173,8 @@ This function should only modify configuration layer settings."
    ;; also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
                                       ;; pretty-mode
+                                      company-posframe
+                                      ivy-posframe
                                       exec-path-from-shell
                                       centaur-tabs
                                       ;; (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
@@ -310,10 +312,9 @@ it should only modify the values of spacemacs settings."
    ;; press `spc t n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         doom-one
-                         doom-one-light
-                         ;; spacemacs-dark
-                         ;; spacemacs-light
+                         doom-solarized-dark
+                         doom-manegarm
+                         doom-solarized-light
                         )
 
    ;; set the theme for the spaceline. supported themes are `spacemacs',
@@ -595,7 +596,8 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   ;; (require 'rtags)
-  (setq inhibit-compacting-font-caches t))
+  (setq inhibit-compacting-font-caches t)
+)
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
@@ -615,8 +617,31 @@ before packages are loaded."
   (add-to-list 'load-path "~/.local/share/icons-in-terminal/")
   (require 'icons-in-terminal)
 
-  (setq completion-styles `(basic partial-completion emacs22 initials
-                                  ,(if (version<= emacs-version "27.0") 'helm-flex 'flex)))
+  (setq doom-manegarm-darker-background t
+        doom-manegarm-muted-modeline t)
+
+  (use-package ivy-posframe
+    :after ivy
+    :config
+    (setq ivy-posframe-border-width 10)
+    (setq ivy-posframe-display-functions-alist
+          '((complete-symbol               . ivy-posframe-display-at-point)
+            (t                             . ivy-posframe-display-at-frame-top-center)))
+    (setq ivy-posframe-parameters
+          '((left-fringe . 0)
+            (right-fringe . 0)))
+    (ivy-posframe-mode))
+  ;;   (set-face-attribute 'ivy-posframe-border nil :background "black")
+
+  (use-package company-posframe
+    :diminish company-posframe-mode
+    :after company
+    :config
+    (company-posframe-mode))
+
+  ;; (setq completion-styles `(basic partial-completion emacs22 initials
+  ;;                                 ,(if (version<= emacs-version "27.0") 'helm-flex 'flex)))
+
   (setq company-box-icons-unknown 'fa_question_circle)
   (setq company-box-icons-elisp
     '((fa_tag :face font-lock-function-name-face) ;; Function
@@ -664,16 +689,18 @@ before packages are loaded."
   (use-package centaur-tabs
     :demand
     :init
-    (setq centaur-tabs-set-bar 'under)
     :config
-    (setq centaur-tabs-style "bar")
+    (setq centaur-tabs-set-bar 'under)
+    (setq centaur-tabs-style "chamfer")
     (setq centaur-tabs-close-button "") ;; 🅇
     (setq centaur-tabs-height 32)
     (setq centaur-tabs-set-icons t)
+    (setq centaur-tabs-gray-out-icons 'buffer)
     (setq centaur-tabs-set-modified-marker t)
+    ;; (setq centaur-tabs-modified-marker "")
     (setq centaur-tabs-cycle-scope 'tabs)
     ;; (setq centaur-tabs--buffer-show-groups t)
-    ;; (centaur-tabs-group-by-projectile-project)
+    (centaur-tabs-group-by-projectile-project)
     (centaur-tabs-headline-match)
     (centaur-tabs-mode t)
     (defun centaur-tabs-buffer-groups ()
@@ -721,7 +748,6 @@ before packages are loaded."
     (org-agenda-mode . centaur-tabs-local-mode)
     (helpful-mode . centaur-tabs-local-mode)
     :bind
-    ;; ("C-S-<tab>" . centaur-tabs-backward)
     ("C-<iso-lefttab>" . centaur-tabs-backward)
     ("C-<tab>" . centaur-tabs-forward)
     ("C-c t" . centaur-tabs-counsel-switch-group)
@@ -746,8 +772,8 @@ before packages are loaded."
 
   (display-time-mode t)
   ;; (display-battery-mode t)
-  (doom-themes-treemacs-config)
-  (doom-themes-visual-bell-config)
+  ;; (doom-themes-treemacs-config)
+  ;; (doom-themes-visual-bell-config)
   ;; ivy will fuzz everywhere!
   ;; (with-eval-after-load 'ivy
   ;;   (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
@@ -768,11 +794,11 @@ before packages are loaded."
   (with-eval-after-load 'org
     (setq org-projectile-file "/home/asad/Documents/agenda.org")
     (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "▶" "◇" "■" "◆"))
-    (setq org-todo-keywords '((sequence " TODO(t)" "|" " DONE(d)")
-                              (sequence " WAITING(w)" "|")
+    (setq org-todo-keywords '((sequence "+ TODO(t)" "|" " DONE(d)")
+                              (sequence "- WAITING(w)" "|")
                               (sequence "|" " CANCELED(c)")))
     (setq spaceline-org-clock-p t)
-    (doom-themes-org-config)
+    ;; (doom-themes-org-config)
     )
 
   (with-eval-after-load 'org-agenda
@@ -813,7 +839,7 @@ before packages are loaded."
   ;; (setq lsp-haskell-process-args-hie '("new-exec" "ghcide" "--" "--lsp"))
   ;; (setq lsp-haskell-process-wrapper-function (lambda (argv) (cons (car argv) (cddr argv))))
   (add-hook 'haskell-mode-hook 'lsp)
-
+  (add-hook 'haskell-mode-hook (lambda ()  (setq tab-width 2)))
   ;; Rust
   (add-hook 'rust-mode-hook 'lsp)
 
@@ -845,7 +871,11 @@ before packages are loaded."
     :init
     (defvar composition-ligature-table (make-char-table nil))
     :hook
-    (((prog-mode conf-mode nxml-mode markdown-mode help-mode lsp-ui-doc-frame-mode org-mode company-mode company-box-mode text-mode)
+    (((prog-mode conf-mode nxml-mode markdown-mode help-mode
+                 lsp-ui-doc-frame-mode org-mode
+                 company-mode company-box-mode
+                 ivy-posframe-mode company-posframe-mode
+                 )
       . (lambda () (setq-local composition-function-table composition-ligature-table))))
     :config
     ;; support ligatures, some toned down to prevent hang
