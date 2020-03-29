@@ -29,7 +29,7 @@ This function should only modify configuration layer settings."
    ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
-   dotspacemacs-configuration-layer-path '("~/.emacs.d/private/")
+   dotspacemacs-configuration-layer-path '("~/.spacemacs.d/private/")
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
@@ -39,7 +39,8 @@ This function should only modify configuration layer settings."
      ;; uncomment some layer names and press `spc f e r' (vim style) or
      ;; `m-m f e r' (emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ansible
+
+     ;; ansible
      asm
      (auto-completion :variables
                       auto-completion-enable-snippets-in-popup t
@@ -61,7 +62,8 @@ This function should only modify configuration layer settings."
             c-c++-lsp-args '("-v=2")
             c-c++-lsp-cache-dir ".ccls-cache"
             c-c++-lsp-extra-init-params '(:completion (:detailedLabel t) :index (:comments 2))
-            c-c++-lsp-sem-highlight-method 'font-lock
+            c-c++-lsp-enable-semantic-highlight t
+            c-c++-lsp-semantic-highlight-method 'overlay
             c-c++-lsp-sem-highlight-rainbow nil)
      ;; cascadia-code-ligatures
      (cmake :variables cmake-enable-cmake-ide-support t)
@@ -72,25 +74,25 @@ This function should only modify configuration layer settings."
      csharp
      csv
      dap
-     dart
+     ;; dart
      dash
      (debug :variables debug-additional-debuggers '("node-inspect"))
      deft
-     django
+     ;; django
      docker
-     elixir
+     ;; elixir
      emacs-lisp
      emoji
      erc
-     erlang
-     ess
+     ;; erlang
+     ;; ess
      (evil-snipe :variables evil-snipe-enable-alternate-f-and-t-behaviors t)
      ;; fira-code-ligatures
      fsharp
      git
      github
-     go
-     gpu
+     ;; go
+     ;; gpu
      graphviz
      ;; (gtags :varibales gtags-enable-by-default t)
      (haskell :variables
@@ -101,40 +103,46 @@ This function should only modify configuration layer settings."
               haskell-process-type 'cabal-new-repl
               haskell-stylish-on-save t)
      ;; helm
+     helpful
      html
      imenu-list
-     ipython-notebook
-     ivy
+     ;; ipython-notebook
+     (ivy :variables
+          ivy-enable-advanced-buffer-information t)
      (javascript :variables
                  javascript-backend 'lsp
                  node-add-modules-path t)
      json
-     kotlin
+     ;; kotlin
      latex
      (lsp :variables
           lsp-prefer-capf nil
           lsp-ui-doc-enable t
           lsp-ui-sideline-enable nil)
-     lua
+     ;; lua
      markdown
+     mu4e
      multiple-cursors
      nginx
-     nim
+     ;; nim
      (org :variables
+          org-directory "~/Dropbox/Personal/org/"
           org-enable-github-support t
+          org-enable-hugo-support t
+          org-enable-org-journal-support t
           org-enable-bootstrap-support t)
-          ;; org-projectile-file "/home/asad/Documents/agenda.org")
+     org-roam
      pandoc
      pdf
-     (python :variables
-             python-backend 'lsp
-             python-test-runner 'pytest)
+     ;; (python :variables
+     ;;         python-backend 'lsp
+     ;;         python-test-runner 'pytest)
      racket
      (ranger :varibales
              ranger-override-dired t
              ranger-show-preview t)
      ;; restclient
-     react
+     ;; react
      rust
      search-engine
      ;; semantic
@@ -146,7 +154,7 @@ This function should only modify configuration layer settings."
      spacemacs-layouts
      speed-reading
      (spell-checking :variables spell-checking-enable-by-default nil)
-     sql
+     ;; sql
      (syntax-checking :variables syntax-checking-enable-by-default nil)
      tern
      themes-megapack
@@ -157,7 +165,7 @@ This function should only modify configuration layer settings."
                treemacs-use-git-mode 'deferred)
      twitter
      (typescript :variables typescript-backend 'lsp)
-     typography
+     (typography :variables typography-enable-typographic-editing t)
      (version-control :variables version-control-diff-tool 'diff-hl)
      vinegar
      windows-scripts
@@ -172,14 +180,22 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      ;; pretty-mode
-                                      company-posframe
-                                      ivy-posframe
-                                      exec-path-from-shell
+                                      ;; (mathpix :location (recipe :fetcher github :repo "jethrokuan/mathpix.el"))
+                                      ;; (org-ref-ox-hugo :location (recipe :fetcher github :repo "jethrokuan/org-ref-ox-hugo"))
+                                      ;; ox-hugo
+                                      all-the-icons-ivy
+                                      all-the-icons-ivy-rich
                                       centaur-tabs
-                                      ;; (lsp-haskell :location (recipe :fetcher github :repo "emacs-lsp/lsp-haskell"))
-                                      (modern-cpp-font-lock :location (recipe :fetcher github :repo "ludwigpacifici/modern-cpp-font-lock" :min-version "1"))
+                                      company-posframe
+                                      dashboard
+                                      elfeed-org
+                                      exec-path-from-shell
+                                      gif-screencast
+                                      ivy-posframe
+                                      outshine
+                                      password-store
                                       solaire-mode
+                                      which-key-posframe
                                      )
 
    ;; a list of packages that cannot be updated.
@@ -200,7 +216,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
-  "initialization:
+  "Initialization:
 this function is called at the very beginning of spacemacs startup,
 before layer configuration.
 it should only modify the values of spacemacs settings."
@@ -216,7 +232,7 @@ it should only modify the values of spacemacs settings."
    ;; file path pointing to emacs 27.1 executable compiled with support
    ;; for the portable dumper (this is currently the branch pdumper).
    ;; (default "emacs-27.0.50")
-   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+   dotspacemacs-emacs-pdumper-executable-file "emacs-28.0.50"
 
    ;; name of the spacemacs dump file. this is the file will be created by the
    ;; portable dumper in the cache directory under dumps sub-directory.
@@ -290,8 +306,7 @@ it should only modify the values of spacemacs settings."
    ;; list sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
    dotspacemacs-startup-lists '((projects . 7)
-                                (recents . 15)
-                                (todos . 5))
+                                (recents . 15))
 
    ;; true if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -340,8 +355,8 @@ it should only modify the values of spacemacs settings."
                                ;;  :width normal)
 
                                ("Cascadia Code"
-                                :size 20
-                                :weight normal)
+                                :size 16
+                                :weight light)
 
                                ;; ("icons-in-terminal"
                                ;;  :size 20
@@ -501,7 +516,7 @@ it should only modify the values of spacemacs settings."
    ;;   :size-limit-kb 1000)
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
-   dotspacemacs-line-numbers t ;; nil
+   dotspacemacs-line-numbers '(:relative t) ;; nil
 
    ;; code folding method. possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -595,7 +610,7 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  ;; (require 'rtags)
+  (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
   (setq inhibit-compacting-font-caches t)
 )
 
@@ -612,346 +627,5 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  (setq read-process-output-max (* 1024 1024))
-
-  (add-to-list 'load-path "~/.local/share/icons-in-terminal/")
-  (require 'icons-in-terminal)
-
-  (setq doom-manegarm-darker-background t
-        doom-manegarm-muted-modeline t)
-
-  (use-package ivy-posframe
-    :after ivy
-    :config
-    (setq ivy-posframe-border-width 10)
-    (setq ivy-posframe-display-functions-alist
-          '((complete-symbol               . ivy-posframe-display-at-point)
-            (t                             . ivy-posframe-display-at-frame-top-center)))
-    (setq ivy-posframe-parameters
-          '((left-fringe . 0)
-            (right-fringe . 0)))
-    (ivy-posframe-mode))
-  ;;   (set-face-attribute 'ivy-posframe-border nil :background "black")
-
-  (use-package company-posframe
-    :diminish company-posframe-mode
-    :after company
-    :config
-    (company-posframe-mode))
-
-  ;; (setq completion-styles `(basic partial-completion emacs22 initials
-  ;;                                 ,(if (version<= emacs-version "27.0") 'helm-flex 'flex)))
-
-  (setq company-box-icons-unknown 'fa_question_circle)
-  (setq company-box-icons-elisp
-    '((fa_tag :face font-lock-function-name-face) ;; Function
-      (fa_cog :face font-lock-variable-name-face) ;; Variable
-      (fa_cube :face font-lock-constant-face) ;; Feature
-      (md_color_lens :face font-lock-doc-face))) ;; Face
-  (setq company-box-icons-yasnippet 'fa_bookmark)
-  (setq company-box-icons-lsp
-    '((1 . fa_text_height) ;; Text
-      (2 . (fa_tags :face font-lock-function-name-face)) ;; Method
-      (3 . (fa_tag :face font-lock-function-name-face)) ;; Function
-      (4 . (fa_tag :face font-lock-function-name-face)) ;; Constructor
-      (5 . (fa_cog :foreground "#FF9800")) ;; Field
-      (6 . (fa_cog :foreground "#FF9800")) ;; Variable
-      (7 . (fa_cube :foreground "#7C4DFF")) ;; Class
-      (8 . (fa_cube :foreground "#7C4DFF")) ;; Interface
-      (9 . (fa_cube :foreground "#7C4DFF")) ;; Module
-      (10 . (fa_cog :foreground "#FF9800")) ;; Property
-      (11 . md_settings_system_daydream) ;; Unit
-      (12 . (fa_cog :foreground "#FF9800")) ;; Value
-      (13 . (md_storage :face font-lock-type-face)) ;; Enum
-      (14 . (md_closed_caption :foreground "#009688")) ;; Keyword
-      (15 . md_closed_caption) ;; Snippet
-      (16 . (md_color_lens :face font-lock-doc-face)) ;; Color
-      (17 . fa_file_text_o) ;; File
-      (18 . md_refresh) ;; Reference
-      (19 . fa_folder_open) ;; Folder
-      (20 . (md_closed_caption :foreground "#009688")) ;; EnumMember
-      (21 . (fa_square :face font-lock-constant-face)) ;; Constant
-      (22 . (fa_cube :face font-lock-type-face)) ;; Struct
-      (23 . fa_calendar) ;; Event
-      (24 . fa_square_o) ;; Operator
-      (25 . fa_arrows)) ;; TypeParameter
-    )
-
-  ;; Make current window shine
-  (use-package solaire-mode
-    :hook (((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
-           (minibuffer-setup . solaire-mode-in-minibuffer))
-    :config
-    (solaire-global-mode)
-    (solaire-mode-swap-bg))
-
-  ;; Setup tabs
-  (use-package centaur-tabs
-    :demand
-    :init
-    :config
-    (setq centaur-tabs-set-bar 'under)
-    (setq centaur-tabs-style "chamfer")
-    (setq centaur-tabs-close-button "") ;; 🅇
-    (setq centaur-tabs-height 32)
-    (setq centaur-tabs-set-icons t)
-    (setq centaur-tabs-gray-out-icons 'buffer)
-    (setq centaur-tabs-set-modified-marker t)
-    ;; (setq centaur-tabs-modified-marker "")
-    (setq centaur-tabs-cycle-scope 'tabs)
-    ;; (setq centaur-tabs--buffer-show-groups t)
-    (centaur-tabs-group-by-projectile-project)
-    (centaur-tabs-headline-match)
-    (centaur-tabs-mode t)
-    (defun centaur-tabs-buffer-groups ()
-      "`centaur-tabs-buffer-groups' control buffers' group rules.
-
- Group centaur-tabs with mode if buffer is derived from `eshell-mode' `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
- All buffer name start with * will group to \"Emacs\".
- Other buffer group by `centaur-tabs-get-group-name' with project name."
-      (list
-       (cond
-        ((or (string-equal "*" (substring (buffer-name) 0 1))
-             (memq major-mode '(magit-process-mode
-  			                        magit-status-mode
-  			                        magit-diff-mode
-  			                        magit-log-mode
-  			                        magit-file-mode
-  			                        magit-blob-mode
-  			                        magit-blame-mode
-  			                        )))
-         "Emacs")
-        ((derived-mode-p 'prog-mode)
-         "Editing")
-        ((derived-mode-p 'dired-mode)
-         "Dired")
-        ((memq major-mode '(helpful-mode
-  		                      help-mode))
-         "Help")
-        ((memq major-mode '(org-mode
-  		                      org-agenda-clockreport-mode
-  		                      org-src-mode
-  		                      org-agenda-mode
-  		                      org-beamer-mode
-  		                      org-indent-mode
-  		                      org-bullets-mode
-  		                      org-cdlatex-mode
-  		                      org-agenda-log-mode
-  		                      diary-mode))
-         "OrgMode")
-        (t
-         (centaur-tabs-get-group-name (current-buffer))))))
-    :hook
-    (dashboard-mode . centaur-tabs-local-mode)
-    (term-mode . centaur-tabs-local-mode)
-    (calendar-mode . centaur-tabs-local-mode)
-    (org-agenda-mode . centaur-tabs-local-mode)
-    (helpful-mode . centaur-tabs-local-mode)
-    :bind
-    ("C-<iso-lefttab>" . centaur-tabs-backward)
-    ("C-<tab>" . centaur-tabs-forward)
-    ("C-c t" . centaur-tabs-counsel-switch-group)
-    (:map evil-normal-state-map
-          ("g t" . centaur-tabs-forward)
-          ("g T" . centaur-tabs-backward)))
-
-  ;; Starting with a decent wide window
-  ;; (add-to-list 'default-frame-alist '(height . 35))
-  ;; (add-to-list 'default-frame-alist '(width . 140))
-
-  (setq exec-path-from-shell-check-startup-files nil)
-  (exec-path-from-shell-initialize)
-  ;; (add-to-list 'exec-path "/home/asad/.local/bin")
-
-  ;; Enabling vertical window divider
-  (window-divider-mode)
-
-  ;; Preventing ligatures from scrambling
-  (set-language-environment "UTF-8")
-  (set-default-coding-systems 'utf-8)
-
-  (display-time-mode t)
-  ;; (display-battery-mode t)
-  ;; (doom-themes-treemacs-config)
-  ;; (doom-themes-visual-bell-config)
-  ;; ivy will fuzz everywhere!
-  ;; (with-eval-after-load 'ivy
-  ;;   (push (cons #'swiper (cdr (assq t ivy-re-builders-alist)))
-  ;;         ivy-re-builders-alist)
-  ;;   (push (cons t #'ivy--regex-fuzzy) ivy-re-builders-alist))
-
-  ;; Configuring hunspell as ispell executable
-  ;; (add-to-list 'exec-path "c:/Users/aghar/scoop/apps/msys2/current/mingw64/bin")
-  ;; (setq ispell-program-name "hunspell")
-  (setq ispell-local-dictionary "en_US")
-  (setq ispell-local-dictionary-alist
-        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
-
-  ;; Stop truncating lines by default
-  (setq-default truncate-lines t)
-
-  ;; Org Mode
-  (with-eval-after-load 'org
-    (setq org-projectile-file "/home/asad/Documents/agenda.org")
-    (setq org-bullets-bullet-list '("◉" "◎" "⚫" "○" "▶" "◇" "■" "◆"))
-    (setq org-todo-keywords '((sequence "+ TODO(t)" "|" " DONE(d)")
-                              (sequence "- WAITING(w)" "|")
-                              (sequence "|" " CANCELED(c)")))
-    (setq spaceline-org-clock-p t)
-    ;; (doom-themes-org-config)
-    )
-
-  (with-eval-after-load 'org-agenda
-    (require 'org-projectile)
-    (push org-projectile-file org-agenda-files))
-
-  ;; All languages
-  ;; (add-hook 'prog-mode-hook #'lsp)
-
-  (setq company-minimum-prefix-length 1
-        company-idle-delay 0.0)
-  ;; (setq lsp-prefer-capf t)
-  (setq lsp-enable-on-type-formatting nil)
-  (setq lsp-enable-indentation nil)
-  (setq lsp-imenu-show-container-name t)
-  (setq lsp-ui-doc-position 'top)
-  (setq lsp-ui-doc-max-width 80
-        lsp-ui-doc-max-height 23)
-  ;; (setq lsp-document-sync-method 'full)
-
-  ;; C-C++
-  (setq projectile-require-project-root t)
-  (setq cmake-ide-build-dir "./build")
-  (setq cmake-ide-header-search-other-file nil)
-  (setq cmake-ide-header-search-first-including nil)
-  (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
-  (add-hook 'c-mode-hook 'lsp)
-  (add-hook 'c++-mode-hook 'lsp)
-  (modern-c++-font-lock-global-mode t)
-  (setq gdb-many-windows t
-        gdb-show-main t)
-
-  ;; Haskell
-  ;; (require 'lsp-haskell)
-  (setq lsp-haskell-process-path-hie "hie-wrapper")
-  (setq lsp-haskell-process-args-hie '("-d" "-l" "/home/asad/.temp/hie.log"))
-  ;; (setq lsp-haskell-process-path-hie "cabal")
-  ;; (setq lsp-haskell-process-args-hie '("new-exec" "ghcide" "--" "--lsp"))
-  ;; (setq lsp-haskell-process-wrapper-function (lambda (argv) (cons (car argv) (cddr argv))))
-  (add-hook 'haskell-mode-hook 'lsp)
-  (add-hook 'haskell-mode-hook (lambda ()  (setq tab-width 2)))
-  ;; Rust
-  (add-hook 'rust-mode-hook 'lsp)
-
-  ;; Javascript
-  (add-hook 'js2-mode-hook 'lsp)
-  (add-hook 'typescript-mode-hook 'lsp)
-  (require 'dap-node)
-  (require 'dap-firefox)
-  (require 'dap-chrome)
-
-  ;; Python
-  (add-hook 'python-mode-hook 'lsp)
-
-  ;; Dart
-  (add-hook 'dart-mode-hook 'lsp)
-
-  ;;; Kawkab Mono
-  ;; This works when using emacs --daemon + emacsclient
-  ;; (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")))
-  (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Vazir")))
-  ;; This works when using emacs without server/client
-  ;; (set-fontset-font t '(#X600 . #X6ff) "Kawkab Mono")
-  (set-fontset-font t '(#X600 . #X6ff) "Vazir")
-
-  ;; (add-hook 'prog-mode-hook 'fira-code-mode)
-  ;; Enable ligatures
-  (use-package composite
-    :defer t
-    :init
-    (defvar composition-ligature-table (make-char-table nil))
-    :hook
-    (((prog-mode conf-mode nxml-mode markdown-mode help-mode
-                 lsp-ui-doc-frame-mode org-mode
-                 company-mode company-box-mode
-                 ivy-posframe-mode company-posframe-mode
-                 )
-      . (lambda () (setq-local composition-function-table composition-ligature-table))))
-    :config
-    ;; support ligatures, some toned down to prevent hang
-    (when (version<= "27.0" emacs-version)
-      (let ((alist
-             '((33 . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
-               (35 . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
-               (36 . ".\\(?:\\(>\\)>?\\)")
-               (37 . ".\\(?:\\(%\\)%?\\)")
-               (38 . ".\\(?:\\(&\\)&?\\)")
-               (42 . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
-               ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
-               (43 . ".\\(?:\\([>]\\)>?\\)")
-               ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
-               (45 . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
-               ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
-               (46 . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
-               (47 . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
-               ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
-               (48 . ".\\(?:\\(x[a-fA-F0-9]\\).?\\)")
-               (58 . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
-               (59 . ".\\(?:\\(;\\);?\\)")
-               (60 . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
-               (61 . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
-               (62 . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
-               (63 . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
-               (91 . ".\\(?:\\(|\\)[]|]?\\)")
-               ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
-               (94 . ".\\(?:\\(=\\)=?\\)")
-               (95 . ".\\(?:\\(|_\\|[_]\\)_?\\)")
-               (119 . ".\\(?:\\(ww\\)w?\\)")
-               (123 . ".\\(?:\\(|\\)[|}]?\\)")
-               (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
-               (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
-        (dolist (char-regexp alist)
-          (set-char-table-range composition-ligature-table (car char-regexp)
-                                `([,(cdr char-regexp) 0 font-shape-gstring]))))
-      (set-char-table-parent composition-ligature-table composition-function-table))
-    )
-  (require 'window-purpose)
-)
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(evil-want-Y-yank-to-eol nil)
- '(hl-todo-keyword-faces
-   '(("TODO" . "#dc752f")
-     ("NEXT" . "#dc752f")
-     ("THEM" . "#2d9574")
-     ("PROG" . "#4f97d7")
-     ("OKAY" . "#4f97d7")
-     ("DONT" . "#f2241f")
-     ("FAIL" . "#f2241f")
-     ("DONE" . "#86dc2f")
-     ("NOTE" . "#b1951d")
-     ("KLUDGE" . "#b1951d")
-     ("HACK" . "#b1951d")
-     ("TEMP" . "#b1951d")
-     ("FIXME" . "#dc752f")
-     ("XXX+" . "#dc752f")
-     ("\\?\\?\\?+" . "#dc752f")))
- '(package-selected-packages '(ansi package-build shut-up epl git commander f dash s))
- '(paradox-github-token t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(treemacs-root-face ((t (:inherit (variable-pitch font-lock-string-face) :weight normal :height 1.1)))))
-)
+  (load (expand-file-name "config.el" dotspacemacs-directory))
+  (load custom-file))
