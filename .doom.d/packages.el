@@ -50,6 +50,7 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
+(package! ws-butler :disable t)
 ;; (package! all-the-icons-ivy-rich)
 ;; (package! ivy-posframe)
 (package! which-key-posframe)
@@ -73,6 +74,8 @@
 ;; (package! anki-editor)
 (package! gif-screencast
   :recipe (:host gitlab :repo "ambrevar/emacs-gif-screencast"))
+;; (package! gruvbox-theme)
 (package! outshine)
 ;; (package! company-org-roam
 ;;   :recipe (:host github :repo "jethrokuan/company-org-roam"))
+(package! theme-magic)

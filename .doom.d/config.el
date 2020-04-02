@@ -9,8 +9,8 @@
 (fringe-mode '(0 . 0))
 
 (setq read-process-output-max (eval-when-compile (* 1024 1024 10))
-      visual-fill-column-width 100)
-(setq gcmh-high-cons-threshold (eval-when-compile (* 1024 1024 1024)))
+      visual-fill-column-width 80)
+(setq gcmh-high-cons-threshold (eval-when-compile (* 1024 1024 32)))
 
 (setq user-full-name "Asad. Gharighi"
       user-mail-address "a.gharighi@gmail.com")
@@ -26,15 +26,16 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq inhibit-compacting-font-caches t)
-;; (setq doom-font (font-spec :family "Cascadia Code" :size 16))
-(setq doom-font (font-spec :family "Fira Code" :size 16))
+(setq doom-font (font-spec :family "Cascadia Code" :size 16))
+;; (setq doom-font (font-spec :family "Fira Code" :size 16))
 (setq doom-variable-pitch-font (font-spec :family "ETBembo" :size 18))
 ;; (setq doom-variable-pitch-font (font-spec :family "Source Sans Pro" :size 12))
+(set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'prepend)
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one-light)
+(setq doom-theme 'doom-solarized-light)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -48,7 +49,7 @@
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
-;; - `use-package' for configuring packages
+;; - `use-package!' for configuring packages
 ;; - `after!' for running code after a package has loaded
 ;; - `add-load-path!' for adding directories to the `load-path', relative to
 ;;   this file. Emacs searches the `load-path' when you load packages with
@@ -72,7 +73,7 @@
 (add-hook 'after-make-frame-functions (lambda (frame) (set-fontset-font t '(#X600 . #X6ff) "Vazir") frame))
 (set-fontset-font t '(#X600 . #X6ff) "Vazir")
 
-(defun update-faces ()
+(defun asad/update-faces ()
   (message "Updating faces...")
   (set-face-attribute 'link nil :bold nil)
   (set-face-attribute 'button nil :bold nil)
@@ -80,26 +81,31 @@
   (set-face-attribute 'font-lock-constant-face nil :bold nil)
   (set-face-attribute 'font-lock-keyword-face nil :bold nil))
 
-(defun tweak-ui ()
+(defun asad/tweak-ui ()
   (message "Tweaking UI...")
+  (setq doom-gruvbox-padded-modeline 0)
   (setq doom-manegarm-darker-background nil
         doom-manegarm-muted-modeline nil
-        doom-manegarm-padded-modeline 2)
+        doom-manegarm-padded-modeline 0)
   (setq doom-solarized-dark-brighter-modeline nil
         doom-solarized-dark-brighter-comments nil
-        doom-solarized-dark-padded-modeline 2)
+        doom-solarized-dark-padded-modeline 0)
   (setq doom-solarized-light-brighter-modeline nil
         doom-solarized-light-brighter-comments nil
-        doom-solarized-light-padded-modeline 2)
-  (solaire-mode-reset)
-  ;; (doom-themes-treemacs-config)
+        doom-solarized-light-padded-modeline 0)
+  (doom-themes-treemacs-config)
   (doom-themes-org-config)
-  (doom-themes-enable-org-fontification)
+  ;; (doom-themes-enable-org-fontification)
   (setq doom-themes-treemacs-enable-variable-pitch nil)
-  (update-faces))
+  (solaire-global-mode +1)
+  (asad/update-faces))
 
-(add-hook 'doom-load-theme-hook #'tweak-ui)
-;; (tweak-ui)
+(add-hook 'doom-load-theme-hook #'asad/tweak-ui)
+(use-package! theme-magic
+  :after doom-themes
+  :config
+  ;; (add-hook 'doom-load-theme-hook #'theme-magic-from-emacs)
+  )
 
 (use-package! composite
   :defer t
@@ -163,62 +169,66 @@
 ;;   (setq-default ivy-rich-path-style 'abbreviate)
 ;;   (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line))
 
-;; (use-package! ivy-posframe
-;;   :after (ivy ivy-rich)
-;;   :config
-;;   (setq ivy-posframe-border-width 10)
-;;   (setq ivy-posframe-display-functions-alist
-;;         '(;; (complete-symbol               . ivy-posframe-display-at-point)
-;;           (swiper                        . ivy-posframe-display-at-window-center)
-;;           (t                             . ivy-posframe-display-at-frame-top-center)))
-;;   (setq ivy-posframe-parameters
-;;         '((left-fringe . 0)
-;;           (right-fringe . 0)))
-;;   (setq ivy-posframe-width 120)
-;;   (ivy-posframe-mode +1))
-
-(after! ivy-posframe
-  (setq ivy-posframe-border-width 10)
+(use-package! ivy-posframe
+  :after (ivy ivy-rich)
+  :config
+  (set-face-background 'ivy-posframe-border (face-background 'highlight) nil)
+  (setq ivy-posframe-border-width 2)
   (setq ivy-posframe-display-functions-alist
-        '(;; (complete-symbol               . ivy-posframe-display-at-point)
-          (swiper                        . ivy-posframe-display-at-window-center)
+        '((swiper                        . ivy-posframe-display-at-window-center)
+          (swiper-isearch                . ivy-posframe-display-at-window-center)
           (t                             . ivy-posframe-display-at-frame-top-center)))
   (setq ivy-posframe-parameters
         '((left-fringe . 0)
           (right-fringe . 0)))
-  (setq ivy-posframe-width 120))
+  (ivy-posframe-mode +1))
 
 (use-package! which-key-posframe
-  :after (which-key posframe)
+  :after which-key
   :config
-  (setq which-key-posframe-border-width 1)
+  (setq which-key-idle-delay 0.4)
+  (setq which-key-posframe-border-width 2)
   (setq which-key-posframe-poshandler 'posframe-poshandler-frame-bottom-center)
   (setq which-key-posframe-parameters
         '((left-fringe . 0)
           (right-fringe . 0)
-          (internal-border-width . 1)
-          ))
-  ;; (setq which-key-posframe-min-height 1)
-  ;; (setq which-key-posframe-min-width 200)
-  ;; (setq which-key-posframe-width 200)
+          (internal-border-width . 2)))
+  (defun asad/which-key-posframe-setup ()
+    (message "Entering which-key-posframe-setup...")
+    (when (and (facep 'which-key-posframe-border)
+               (facep 'highlight))
+      (message "Updating which-key-posframe-border...")
+      (set-face-background 'which-key-posframe-border (face-background 'highlight) nil)))
+  ;; (add-hook 'which-key-posframe-mode-hook #'asad/which-key-posframe-setup)
+  (add-hook 'doom-load-theme-hook #'asad/which-key-posframe-setup)
+  (asad/which-key-posframe-setup)
   (which-key-posframe-mode +1))
 
 (use-package! centaur-tabs
   :defer t
   :config
+  (defun asad/centaur-tabs-setup ()
+    (message "Entering centaur-tabs-setup...")
+    (when (and (facep 'centaur-tabs-selected)
+               (facep 'highlight))
+      (message "Updating centaur-tabs-selected...")
+      (set-face-background 'centaur-tabs-selected (face-background 'highlight) nil)
+      (set-face-foreground 'centaur-tabs-selected (face-foreground 'highlight) nil)
+      (set-face-background 'centaur-tabs-selected-modified (face-background 'highlight) nil)
+      (set-face-foreground 'centaur-tabs-selected-modified (face-foreground 'highlight) nil)))
+  (add-hook 'doom-load-theme-hook #'asad/centaur-tabs-setup)
   (setq centaur-tabs-set-bar 'under
         centaur-tabs-style "bar"
-        centaur-tabs-close-button "" ;; 🅇
+        centaur-tabs-close-button ""
         centaur-tabs-height 28
         centaur-tabs-set-icons t
-        ;; centaur-tabs-plain-icons t
         centaur-tabs-gray-out-icons 'buffer
         centaur-tabs-set-modified-marker t
         centaur-tabs-modified-marker ""
         centaur-tabs-cycle-scope 'tabs)
-  ;; (setq centaur-tabs--buffer-show-groups t)
   (centaur-tabs-group-by-projectile-project)
   (centaur-tabs-headline-match)
+  (asad/centaur-tabs-setup)
   (centaur-tabs-mode +1)
   (defun centaur-tabs-buffer-groups ()
     "`centaur-tabs-buffer-groups' control buffers' group rules.
@@ -274,7 +284,8 @@
 
 ;; Org Mode
 (add-hook 'writeroom-mode-hook (lambda () (display-line-numbers-mode -1)))
-(add-hook 'org-mode-hook #'writeroom-mode)
+;; (add-hook 'org-mode-hook #'writeroom-mode)
+(add-hook 'org-mode-hook #'visual-line-mode)
 (add-hook 'org-mode-hook #'+org-pretty-mode)
 (add-hook 'org-mode-hook #'prettify-symbols-mode)
 (use-package! org
@@ -287,10 +298,14 @@
   (map! :map org-mode-map
         "M-n" #'outline-next-visible-heading
         "M-p" #'outline-previous-visible-heading)
-  (setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "†")
-                                         ("#+END_SRC" . "†")
-                                         ("#+begin_src" . "†")
-                                         ("#+end_src" . "†")))
+  (setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "")
+                                         ("#+END_SRC" . "")
+                                         ("#+begin_src" . "")
+                                         ("#+end_src" . "")
+                                         ("#+BEGIN_QUOTE" . "")
+                                         ("#+END_QUOTE" . "")
+                                         ("#+begin_quote" . "")
+                                         ("#+end_quote" . "")))
   (setq org-src-window-setup 'current-window
         org-return-follows-link t
         org-babel-load-languages '((emacs-lisp . t)
@@ -301,7 +316,7 @@
         org-fontify-done-headline t
         org-hide-leading-stars t
         org-pretty-entities t
-        org-odd-levels-only t
+        ;; org-odd-levels-only t
         org-use-speed-commands t
         org-catch-invisible-edits 'show
         org-preview-latex-image-directory "/tmp/ltximg/"
@@ -321,13 +336,6 @@
   (with-eval-after-load 'flycheck
     (flycheck-add-mode 'proselint 'org-mode)))
 
-(require 'org-capture)
-(require 'org-protocol)
-(add-to-list 'org-modules 'org-protocol)
-;; (use-package! org-protocol
-;;   :config
-;;   (pushnew! org-modules 'org-protocol))
-
 (after! org
   (defun asad/org-archive-done-tasks ()
     "Archive all done tasks."
@@ -339,6 +347,13 @@
   (require 'find-lisp)
   (setq org-agenda-files
         (find-lisp-find-files asad/org-agenda-directory "\.org$")))
+
+(require 'org-protocol)
+(require 'org-capture)
+(add-to-list 'org-modules 'org-protocol)
+;; (use-package! org-protocol
+;;   :config
+;;   (pushnew! org-modules 'org-protocol))
 
 ;; (after! 'org-capture
 (setq org-capture-templates
@@ -361,8 +376,9 @@
       '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
         (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
 
-(setq org-ellipsis "  ⤵")
-(setq org-bullets-bullet-list '("◉" "☯" "○" "☯" "✸" "☯" "✿" "☯" "✜" "☯" "◆" "☯" "▶"))
+(setq org-ellipsis "  ") ;; ⤵
+(setq org-bullets-bullet-list '("" "" "" "" "" "" "" "" "" "" "" "" ""))
+;; (setq org-bullets-bullet-list '("◉" "☯" "○" "☯" "✸" "☯" "✿" "☯" "✜" "☯" "◆" "☯" "▶"))
 ;; (setq org-todo-keywords '((sequence " TODO(t)" "|"
 ;;                                     " DONE(d)")
 ;;                           (sequence " WAITING(w)" "|")
@@ -499,7 +515,7 @@
     (org-agenda nil " "))
   :config
   (setq org-columns-default-format "%40ITEM(Task) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
-  (setq org-agenda-custom-commands `((" " "Agenda"
+  (setq org-agenda-custom-commands `(("X" "Agenda"
                                       ((agenda ""
                                                ((org-agenda-span 'week)
                                                 (org-deadline-warning-days 365)))
@@ -530,9 +546,9 @@
   (require 'el-patch))
 
 (add-hook 'deft-mode-hook #'hl-line-mode)
-(add-hook 'deft-mode-hook #'display-line-numbers-mode)
+;; (add-hook 'deft-mode-hook #'display-line-numbers-mode)
 (use-package! deft
-  :after (org el-patch)
+  :after (el-patch org)
   :custom
   (deft-recursive t)
   (deft-use-filter-string-for-filename t)
@@ -558,7 +574,7 @@ used as title."
   :hook
   (after-init . org-roam-mode)
   :custom-face
-  (org-roam-link ((t (:inherit org-link :foreground "#005200"))))
+  (org-roam-link ((t (:inherit org-link))))
   :init
   (map! :leader
         :prefix "n"
@@ -567,9 +583,11 @@ used as title."
         :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
         :desc "org-roam-find-file" "f" #'org-roam-find-file
         :desc "org-roam-show-graph" "g" #'org-roam-show-graph
-        :desc "org-roam-insert" "i" #'org-roam-insert)
+        :desc "org-roam-insert" "i" #'org-roam-insert
+        :desc "org-roam-capture" "c" #'org-roam-capture)
   (setq org-roam-directory "/home/asad/Dropbox/Personal/org/"
-        org-roam-db-location "/home/asad/org-roam.db")
+        org-roam-db-location "/home/asad/org-roam.db"
+        org-roam-graph-exclude-matcher "private")
   :config
   (require 'org-roam-protocol)
   (setq org-roam-capture-templates
@@ -723,6 +741,7 @@ used as title."
   :bind
   ("<f12>" . gif-screencast-start-or-stop))
 
+(remove-hook 'ivy-mode-hook #'ivy-rich-mode)
 (remove-hook 'text-mode-hook #'auto-fill-mode)
 (add-hook 'text-mode-hook (lambda () (toggle-word-wrap +1)))
 
@@ -745,17 +764,8 @@ used as title."
 ;; (setq spaceline-org-clock-p t)
 
 (setq company-minimum-prefix-length 1
-      company-idle-delay 0.0)
+      company-idle-delay 0.1)
 
-(after! which-key-posframe
-  (defun asad/which-key-posframe-setup ()
-    (message "Entering which-key-posframe-setup...")
-    (when (and (facep 'which-key-posframe-border)
-               (facep 'highlight))
-      (message "Updating which-key-posframe-border...")
-      (set-face-background 'which-key-posframe-border (face-background 'highlight) nil)))
-  (add-hook 'which-key-posframe-mode-hook #'asad/which-key-posframe-setup)
-  (add-hook 'doom-load-theme-hook #'asad/which-key-posframe-setup))
 ;; All languages
 
 ;; (setq lsp-prefer-capf t)
@@ -771,7 +781,8 @@ used as title."
           lsp-imenu-show-container-name t))
   (asad/lsp-setup)
   (add-hook 'lsp-mode-hook #'asad/lsp-setup)
-  (add-hook 'doom-load-theme-hook #'asad/lsp-setup))
+  (add-hook 'doom-load-theme-hook #'asad/lsp-setup)
+  (lsp-ui-mode +1))
 
 (after! lsp-ui
   (defun asad/lsp-ui-doc-setup ()
@@ -794,7 +805,7 @@ used as title."
 
     (setq lsp-ui-doc-alignment 'frame
           lsp-ui-doc-delay 0.2
-          lsp-ui-doc-frame-parameters '((left-fringe . 4) (right-fringe . 4) (internal-border-width . 1))
+          lsp-ui-doc-frame-parameters '((left-fringe . 4) (right-fringe . 4) (internal-border-width . 2))
           lsp-ui-doc-header t
           lsp-ui-doc-include-signature t
           lsp-ui-doc-max-height 33
@@ -807,31 +818,24 @@ used as title."
   (lsp-ui-doc-mode +1))
 
 ;; C-C++
-(after! 'projectile
+(after! projectile
   (setq projectile-require-project-root t))
 
-(after! 'cmake-ide
+(after! cmake-ide
   (setq cmake-ide-build-dir "./build")
   (setq cmake-ide-header-search-other-file nil)
   (setq cmake-ide-header-search-first-including nil))
 
-(after! 'ccls
+(after! ccls
   (setq ccls-extra-init-params '(:index (:comments 2) :completion (:detailedLabel t)))
   (setq ccls-sem-highlight-method nil))
-;; (add-hook 'WHATEVER-MODE-HOOK ((set-face-attribute 'ccls-sem-static-face nil :bold nil)))
-;; (modern-c++-font-lock-global-mode t)
 
-(after! 'gdb-mi
+(after! gdb-mi
   (setq gdb-many-windows t
         gdb-show-main t))
 
 ;; Haskell
-;; (require 'lsp-haskell)
-(after! 'lsp-haskell
-  ;; (add-hook 'haskell-mode-hook (lambda ()  (setq tab-width 2)))
+(after! lsp-haskell
   (setq haskell-process-type 'cabal-new-repl)
   (setq lsp-haskell-process-args-hie '("-d" "-l" "/home/asad/.temp/hie.log")))
-;; (setq lsp-haskell-process-path-hie "cabal")
-;; (setq lsp-haskell-process-args-hie '("new-exec" "ghcide" "--" "--lsp"))
-;; (setq lsp-haskell-process-wrapper-function (lambda (argv) (cons (car argv) (cddr argv))))
 
