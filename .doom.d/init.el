@@ -74,7 +74,7 @@
        eshell                     ; a consistent, cross-platform shell (WIP)
        ;;shell                    ; a terminal REPL for Emacs
        ;;term                     ; terminals in Emacs
-       ;;vterm                    ; another terminals in Emacs
+       vterm                    ; another terminals in Emacs
 
        :checkers
        (syntax +childframe)       ; tasing you for every semicolon you forget
@@ -142,8 +142,9 @@
         ;; +dragndrop             ; drag & drop files/images into org buffers
         +hugo                     ; use Emacs for hugo blogging
         ;;+jupyter                ; ipython/jupyter support for babel
-        ;;+pandoc                 ; export-with-pandoc support
+        +pandoc                   ; export-with-pandoc support
         +pomodoro                 ; be fruitful with the tomato technique
+        ;; +roam
         +present)                 ; using org-mode for presentations
        ;;perl                     ; write code no one else can comprehend
        ;;php                      ; perl's insecure younger brother

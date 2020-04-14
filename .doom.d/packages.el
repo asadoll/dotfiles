@@ -55,6 +55,7 @@
 ;; (package! ivy-posframe)
 (package! which-key-posframe)
 (package! org-journal)
+(package! org-download)
 ;; (package! all-the-icons-ivy-rich)
 
 ;; (package! dired-narrow)
@@ -78,4 +79,10 @@
 (package! outshine)
 ;; (package! company-org-roam
 ;;   :recipe (:host github :repo "jethrokuan/company-org-roam"))
-(package! theme-magic)
+;; (package! theme-magic)
+(package! ewal
+  :recipe (:host gitlab :repo "jjzmajic/ewal" :files ("ewal.el"
+                                                      "./*.el"
+                                                      "./doom-themes/*.el"
+                                                      "./evil-cursors/*.el"
+                                                      "./spacemacs-themes/*.el")))

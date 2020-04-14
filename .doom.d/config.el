@@ -1,41 +1,28 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets.
-(fringe-mode '(0 . 0))
-
+;; (fringe-mode '(0 . 0))
+(setq frame-title-format "%b")
+(defun asad/setup-window-config ()
+  (set-window-fringes nil 0 0 t nil))
+(add-hook 'window-configuration-change-hook #'asad/setup-window-config)
 (setq read-process-output-max (eval-when-compile (* 1024 1024 10))
       visual-fill-column-width 80)
 (setq gcmh-high-cons-threshold (eval-when-compile (* 1024 1024 32)))
 
+;; Some functionality uses this to identify you, e.g. GPG configuration, email
+;; clients, file templates and snippets.
 (setq user-full-name "Asad. Gharighi"
       user-mail-address "a.gharighi@gmail.com")
 
-;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
-;; are the three important ones:
-;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
 (setq inhibit-compacting-font-caches t)
 (setq doom-font (font-spec :family "Cascadia Code" :size 16))
-;; (setq doom-font (font-spec :family "Fira Code" :size 16))
 (setq doom-variable-pitch-font (font-spec :family "ETBembo" :size 18))
-;; (setq doom-variable-pitch-font (font-spec :family "Source Sans Pro" :size 12))
-(set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'prepend)
+;; (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'prepend)
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-solarized-light)
+(setq doom-theme 'ewal-doom-one)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -83,29 +70,52 @@
 
 (defun asad/tweak-ui ()
   (message "Tweaking UI...")
-  (setq doom-gruvbox-padded-modeline 0)
-  (setq doom-manegarm-darker-background nil
-        doom-manegarm-muted-modeline nil
-        doom-manegarm-padded-modeline 0)
-  (setq doom-solarized-dark-brighter-modeline nil
-        doom-solarized-dark-brighter-comments nil
-        doom-solarized-dark-padded-modeline 0)
-  (setq doom-solarized-light-brighter-modeline nil
-        doom-solarized-light-brighter-comments nil
-        doom-solarized-light-padded-modeline 0)
+  ;; (setq doom-gruvbox-padded-modeline 0)
+  ;; (setq doom-manegarm-darker-background nil
+  ;;       doom-manegarm-muted-modeline nil
+  ;;       doom-manegarm-padded-modeline 0)
+  ;; (setq doom-solarized-dark-brighter-modeline nil
+  ;;       doom-solarized-dark-brighter-comments nil
+  ;;       doom-solarized-dark-padded-modeline 0)
+  ;; (setq doom-solarized-light-brighter-modeline nil
+  ;;       doom-solarized-light-brighter-comments nil
+  ;;       doom-solarized-light-padded-modeline 0)
+  (setq ewal-doom-vibrant-brighter-modeline t
+        ewal-doom-vibrant-brighter-comments nil)
   (doom-themes-treemacs-config)
   (doom-themes-org-config)
   ;; (doom-themes-enable-org-fontification)
   (setq doom-themes-treemacs-enable-variable-pitch nil)
-  (solaire-global-mode +1)
+  (setq window-divider-default-right-width 3
+        window-divider-default-bottom-width 3)
+  ;; (solaire-global-mode +1)
   (asad/update-faces))
 
 (add-hook 'doom-load-theme-hook #'asad/tweak-ui)
-(use-package! theme-magic
+;; (use-package! theme-magic
+;;   :after doom-themes
+;;   :config
+;;   ;; (add-hook 'doom-load-theme-hook #'theme-magic-from-emacs)
+;;   )
+
+(use-package! ewal
   :after doom-themes
+  :init (setq ewal-use-built-in-always-p nil
+              ewal-use-built-in-on-failure-p t
+              ewal-built-in-palette "sexy-material"))
+(use-package! ewal-doom-themes
+  :after ewal
   :config
-  ;; (add-hook 'doom-load-theme-hook #'theme-magic-from-emacs)
-  )
+  (defun asad/ewal-setup (&optional event)
+    (progn
+      (load-theme 'ewal-doom-vibrant t)
+      (enable-theme 'ewal-doom-vibrant)))
+  (asad/ewal-setup)
+  (require 'filenotify)
+  (file-notify-add-watch "~/.cache/wal/colors.json" '(change) #'asad/ewal-setup))
+(use-package! ewal-evil-cursors
+  :after (ewal-doom-themes)
+  :config (ewal-evil-cursors-get-colors :apply t))
 
 (use-package! composite
   :defer t
@@ -184,7 +194,7 @@
   (ivy-posframe-mode +1))
 
 (use-package! which-key-posframe
-  :after which-key
+  :after (which-key ewal-doom-themes)
   :config
   (setq which-key-idle-delay 0.4)
   (setq which-key-posframe-border-width 2)
@@ -198,7 +208,7 @@
     (when (and (facep 'which-key-posframe-border)
                (facep 'highlight))
       (message "Updating which-key-posframe-border...")
-      (set-face-background 'which-key-posframe-border (face-background 'highlight) nil)))
+      (set-face-background 'which-key-posframe-border (face-background 'highlight) (selected-frame))))
   ;; (add-hook 'which-key-posframe-mode-hook #'asad/which-key-posframe-setup)
   (add-hook 'doom-load-theme-hook #'asad/which-key-posframe-setup)
   (asad/which-key-posframe-setup)
@@ -216,13 +226,14 @@
       (set-face-foreground 'centaur-tabs-selected (face-foreground 'highlight) nil)
       (set-face-background 'centaur-tabs-selected-modified (face-background 'highlight) nil)
       (set-face-foreground 'centaur-tabs-selected-modified (face-foreground 'highlight) nil)))
-  (add-hook 'doom-load-theme-hook #'asad/centaur-tabs-setup)
-  (setq centaur-tabs-set-bar 'under
-        centaur-tabs-style "bar"
+  ;; (add-hook 'doom-load-theme-hook #'asad/centaur-tabs-setup)
+  (setq centaur-tabs-style "bar"
+        centaur-tabs-set-bar 'under
+        x-underline-at-descent-line t
         centaur-tabs-close-button ""
         centaur-tabs-height 28
         centaur-tabs-set-icons t
-        centaur-tabs-gray-out-icons 'buffer
+        centaur-tabs-gray-out-icons nil
         centaur-tabs-set-modified-marker t
         centaur-tabs-modified-marker ""
         centaur-tabs-cycle-scope 'tabs)
@@ -275,8 +286,8 @@
   (org-agenda-mode . centaur-tabs-local-mode)
   (helpful-mode . centaur-tabs-local-mode)
   :bind
-  ("C-<iso-lefttab>" . centaur-tabs-backward)
-  ("C-<tab>" . centaur-tabs-forward)
+  ("M-<iso-lefttab>" . centaur-tabs-backward)
+  ("M-<tab>" . centaur-tabs-forward)
   ("C-c t" . centaur-tabs-counsel-switch-group)
   (:map evil-normal-state-map
         ("g t" . centaur-tabs-forward)
@@ -288,6 +299,7 @@
 (add-hook 'org-mode-hook #'visual-line-mode)
 (add-hook 'org-mode-hook #'+org-pretty-mode)
 (add-hook 'org-mode-hook #'prettify-symbols-mode)
+(add-hook 'org-mode-hook #'org-download-enable)
 (use-package! org
   :defer t
   :mode ("\\.org\\'" . org-mode)
@@ -334,7 +346,8 @@
                                        ("d" . "definition")
                                        ("t" . "theorem")))
   (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'proselint 'org-mode)))
+    (flycheck-add-mode 'proselint 'org-mode))
+  (remove-hook 'org-mode-hook #'org-journal-update-auto-mode-alist))
 
 (after! org
   (defun asad/org-archive-done-tasks ()
@@ -346,6 +359,8 @@
   (message "Populating agenda files...")
   (require 'find-lisp)
   (setq org-agenda-files
+        (find-lisp-find-files asad/org-agenda-directory "\.org$"))
+  (setq org-agenda-contributing-files
         (find-lisp-find-files asad/org-agenda-directory "\.org$")))
 
 (require 'org-protocol)
@@ -392,6 +407,8 @@
                             ("@home" . ?h)
                             ("@office" . ?o)
                             ("@work" . ?s)
+                            ("@research" . ?r)
+                            ("@do-it" . ?d)
                             (:newline)
                             ("WAITING" . ?w)
                             ("HOLD" . ?H)
@@ -403,6 +420,7 @@
 (setq org-refile-allow-creating-parent-nodes 'confirm)
 (setq org-refile-targets '(("next.org" :level . 0)
                            ("someday.org" :level . 0)
+                           ("home.org" :level . 0)
                            ("reading.org" :level . 1)
                            ("projects.org" :maxlevel . 1)))
 
@@ -419,7 +437,7 @@
 (defvar asad/org-current-effort "1:00"
   "Current effort for agenda items.")
 
-(defun asad/my-org-agenda-set-effort (effort)
+(defun asad/org-agenda-set-effort (effort)
   "Set the effort property for the current headline."
   (interactive
    (list (read-string (format "Effort [%s]: " asad/org-current-effort) nil nil asad/org-current-effort)))
@@ -446,7 +464,7 @@
   (org-with-wide-buffer
    (org-agenda-set-tags)
    (org-agenda-priority)
-   (call-interactively 'asad/my-org-agenda-set-effort)
+   (call-interactively 'asad/org-agenda-set-effort)
    (org-agenda-refile nil nil t)))
 
 (defun asad/bulk-process-entries ()
@@ -515,7 +533,7 @@
     (org-agenda nil " "))
   :config
   (setq org-columns-default-format "%40ITEM(Task) %Effort(EE){:} %CLOCKSUM(Time Spent) %SCHEDULED(Scheduled) %DEADLINE(Deadline)")
-  (setq org-agenda-custom-commands `(("X" "Agenda"
+  (setq org-agenda-custom-commands `((" " "Agenda"
                                       ((agenda ""
                                                ((org-agenda-span 'week)
                                                 (org-deadline-warning-days 365)))
@@ -530,6 +548,10 @@
                                               (org-agenda-files '(,(concat asad/org-agenda-directory "someday.org")
                                                                   ,(concat asad/org-agenda-directory "projects.org")
                                                                   ,(concat asad/org-agenda-directory "next.org")))
+                                              ))
+                                       (todo "TODO"
+                                             ((org-agenda-overriding-header "Home")
+                                              (org-agenda-files '(,(concat asad/org-agenda-directory "home.org")))
                                               ))
                                        (todo "TODO"
                                              ((org-agenda-overriding-header "Projects")
@@ -582,7 +604,7 @@ used as title."
         :desc "org-roam-insert" "i" #'org-roam-insert
         :desc "org-roam-switch-to-buffer" "b" #'org-roam-switch-to-buffer
         :desc "org-roam-find-file" "f" #'org-roam-find-file
-        :desc "org-roam-show-graph" "g" #'org-roam-show-graph
+        :desc "org-roam-graph-show" "g" #'org-roam-graph-show
         :desc "org-roam-insert" "i" #'org-roam-insert
         :desc "org-roam-capture" "c" #'org-roam-capture)
   (setq org-roam-directory "/home/asad/Dropbox/Personal/org/"
@@ -629,10 +651,10 @@ used as title."
          (concat acc (format "- [[file:%s][%s]]\n"
                              (file-relative-name (car it) org-roam-directory)
                              (org-roam--get-title-or-slug (car it))))
-         "" (org-roam-sql [:select [file-from]
-                                   :from file-links
-                                   :where (= file-to $s1)
-                                   :and file-from :not :like $s2] file "%private%"))
+         "" (org-roam-sql [:select [from]
+                                   :from links
+                                   :where (= to $s1)
+                                   :and from :not :like $s2] file "%private%"))
       ""))
   (defun asad/org-export-preprocessor (_backend)
     (let ((links (asad/org-roam--backlinks-list (buffer-file-name))))
@@ -668,7 +690,6 @@ used as title."
     (org-journal-new-entry t)))
 
 (use-package! org-download
-  :defer t
   :commands
   org-download-dnd
   org-download-yank
@@ -683,7 +704,8 @@ used as title."
             '("^data:" . org-download-dnd-base64))
   (advice-add #'org-download-enable :override #'ignore)
   :config
-  (defun +org/org-download-method (link)
+  ;; (defun +org/org-download-method (link)
+  (defun asad/org-download-method (link)
     (let ((filename
            (file-name-nondirectory
             (car (url-path-and-query
@@ -698,16 +720,16 @@ used as title."
                                             (file-name-extension filename))))
       (make-directory dirname t)
       (expand-file-name filename-with-timestamp dirname)))
-  :config
   (setq org-download-screenshot-method
         (cond (IS-MAC "screencapture -i %s")
               (IS-LINUX
-               (cond ((executable-find "maim")  "maim -s %s")
+               (cond ((executable-find "grim")  "grim -t png -g \"$(slurp -b '#AFAFAFAF' -c '#FF4F3FAF' -s '#00000000' -w 3 -d)\" %s")
+                     ((executable-find "maim")  "maim -s %s")
                      ((executable-find "scrot") "scrot -s %s")))))
-  (if (memq window-system '(mac ns))
-      (setq org-download-screenshot-method "screencapture -i %s")
-    (setq org-download-screenshot-method "maim -s %s"))
-  (setq org-download-method 'my-org-download-method))
+  ;; (if (memq window-system '(mac ns))
+  ;;     (setq org-download-screenshot-method "screencapture -i %s")
+  ;;   (setq org-download-screenshot-method "maim -s %s"))
+  (setq org-download-method 'asad/org-download-method))
 
 (use-package! org-ref-ox-hugo
   :after (org org-ref ox-hugo)
@@ -739,7 +761,10 @@ used as title."
 (use-package! gif-screencast
   :defer t
   :bind
-  ("<f12>" . gif-screencast-start-or-stop))
+  ("<f12>" . gif-screencast-start-or-stop)
+  :config
+  (setq gif-screencast-program "grim"
+        gif-screencast-args '()))
 
 (remove-hook 'ivy-mode-hook #'ivy-rich-mode)
 (remove-hook 'text-mode-hook #'auto-fill-mode)
@@ -749,6 +774,31 @@ used as title."
   "Insert a timestamp according to locale's date and time format."
   (interactive)
   (insert (format-time-string "%c" (current-time))))
+
+;; from https://www.emacswiki.org/emacs/CopyingWholeLines
+(defun asad/duplicate-line-or-region (&optional n)
+  "Duplicate current line, or region if active.
+With argument N, make N copies.
+With negative N, comment out original line and use the absolute value."
+  (interactive "*p")
+  (let ((use-region (use-region-p)))
+    (save-excursion
+      (let ((text (if use-region        ; Get region if active, otherwise line
+                      (buffer-substring (region-beginning) (region-end))
+                    (prog1 (thing-at-point 'line)
+                      (end-of-line)
+                      (if (< 0 (forward-line 1)) ; Go to beginning of next line, or make a new one
+                          (newline))))))
+        (dotimes (i (abs (or n 1)))     ; Insert N times, or once if not specified
+          (insert text))))
+    (if use-region nil                  ; Only if we're working with a line (not a region)
+      (let ((pos (- (point) (line-beginning-position)))) ; Save column
+        (if (> 0 n)                             ; Comment out original with negative arg
+            (comment-region (line-beginning-position) (line-end-position)))
+        (forward-line 1)
+        (forward-char pos)))))
+
+(map! :nv "C-x l d" #'asad/duplicate-line-or-region)
 
 (use-package! elfeed-org
   :defer t
@@ -780,7 +830,7 @@ used as title."
           lsp-enable-indentation nil
           lsp-imenu-show-container-name t))
   (asad/lsp-setup)
-  (add-hook 'lsp-mode-hook #'asad/lsp-setup)
+  ;; (add-hook 'lsp-mode-hook #'asad/lsp-setup)
   (add-hook 'doom-load-theme-hook #'asad/lsp-setup)
   (lsp-ui-mode +1))
 
@@ -813,7 +863,7 @@ used as title."
           lsp-ui-doc-position 'top))
   ;; (setq lsp-document-sync-method 'full)
   (asad/lsp-ui-doc-setup)
-  (add-hook 'lsp-ui-doc-mode-hook #'asad/lsp-ui-doc-setup)
+  ;; (add-hook 'lsp-ui-doc-mode-hook #'asad/lsp-ui-doc-setup)
   (add-hook 'doom-load-theme-hook #'asad/lsp-ui-doc-setup)
   (lsp-ui-doc-mode +1))
 
@@ -838,4 +888,3 @@ used as title."
 (after! lsp-haskell
   (setq haskell-process-type 'cabal-new-repl)
   (setq lsp-haskell-process-args-hie '("-d" "-l" "/home/asad/.temp/hie.log")))
-

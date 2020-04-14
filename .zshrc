@@ -88,7 +88,12 @@ source $ZSH/oh-my-zsh.sh
 # export ARCHFLAGS="-arch x86_64"
 
 # ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
+export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+# eval $(/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+# export $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh,gpg)
+# dbus-update-activation-environment DISPLAY
+## --systemd DISPLAY
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
@@ -98,7 +103,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias sway="dbus-launch --exit-with-session /usr/bin/sway"
+# alias sway="dbus-launch --exit-with-session /usr/bin/sway"
 ### "dbus-run-session sway"
 alias termite="LD_LIBRARY_PATH=/usr/local/lib ~/source/repos/termite/termite -e /usr/bin/zsh -c ~/.config/termite/config"
 eval "$(starship init zsh)"
